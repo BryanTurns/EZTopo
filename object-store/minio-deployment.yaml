@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+      - name: master
+        image: dirkcgrunwald/minio-example:v4
+        env:
+          - name: MINIO_HOST
+            value: "minio:9000"
+        ports:
+        - containerPort: 9000
