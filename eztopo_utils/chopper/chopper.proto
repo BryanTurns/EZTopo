@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package chopper;
+
+service chopper {
+    rpc Chop (chopMessage) returns (chopReply);
+}
+
+message chopMessage {
+    string hash=1;
+}
+
+message chopReply {
+    int32 err=1;
+}

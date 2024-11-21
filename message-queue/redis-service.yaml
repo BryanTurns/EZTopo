@@ -11,6 +11,7 @@ metadata:
   labels:
     app: redis
 spec:
+  clusterIP: 10.108.148.45
   ports:
     - protocol: "TCP"
       port: 6379
