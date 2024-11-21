@@ -16,7 +16,7 @@ minioClient = Minio(minioHost,
                access_key=minioUser,
                secret_key=minioPasswd)
 
-
+# Uploading -> Uploaded -> Chopping -> Chopped -> 
 class ChopperServicer(chopper_pb2_grpc.chopperServicer):
     def Chop(self, request, context):
         videoHash = request.hash
