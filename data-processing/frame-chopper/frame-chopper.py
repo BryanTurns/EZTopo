@@ -2,19 +2,15 @@ import cv2, os, grpc, redis
 from concurrent import futures
 from eztopo_utils.chopper import chopper_pb2, chopper_pb2_grpc
 from minio import Minio
-from eztopo_utils.constants import FRAME_TIME_INTERVAL
+import eztopo_utils.constants as constants
 
 
-# Number of seconds between saved frames
+redisClient = redis.Redis(host=constants.REDIS_HOST, port=constants.REDIS_PORT)
 
 
-# IP is static (refer to /message-queue/redis-service.yaml)
-redisClient = redis.Redis(host="10.108.148.45", port=6379)
-
-
-minioHost = os.getenv("MINIO_HOST") or "minio-proj.minio-ns.svc.cluster.local:9000"
-minioUser = os.getenv("MINIO_USER") or "rootuser"
-minioPasswd = os.getenv("MINIO_PASSWD") or "rootpass123"
+minioHost = constants.MINIO_HOST
+minioUser = constants.MINIO_USER
+minioPasswd = constants.MINIO_PASSWORD
 minioClient = Minio(minioHost,
                secure=False,
                access_key=minioUser,
@@ -37,7 +33,7 @@ class ChopperServicer(chopper_pb2_grpc.chopperServicer):
 
         fps = int(videoObject.get(cv2.CAP_PROP_FPS))
         # Every frameCaptureInteval, save a frame
-        frameCaptureInterval = int(FRAME_TIME_INTERVAL * fps)
+        frameCaptureInterval = int(constants.FRAME_TIME_INTERVAL * fps)
         # Number of frames read
         n = 0
         success = True

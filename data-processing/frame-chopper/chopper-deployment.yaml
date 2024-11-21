@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: eztopo-rest
+  name: eztopo-chopper
 spec:
   selector:
     matchLabels:
-      app: eztopo-rest
+      app: eztopo-chopper
   replicas: 1
   template:
     metadata:
       labels:
-        app: eztopo-rest
+        app: eztopo-chopper
     spec:
       containers:
         - name: master
-          image: bryanturns/eztopo-rest:latest
+          image: bryanturns/eztopo-chopper:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 5000
+            - containerPort: 50051
