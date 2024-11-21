@@ -1,6 +1,6 @@
 import cv2, os, grpc, redis
 from concurrent import futures
-from eztopo_utils.chopper import chopper_pb2, chopper_pb2_grpc
+from eztopo_utils.grpc import chopper_pb2, chopper_pb2_grpc, checkConnection_pb2, checkConnection_pb2_grpc
 from minio import Minio
 import eztopo_utils.constants as constants
 
@@ -19,10 +19,6 @@ minioClient = Minio(minioHost,
 
 class ChopperServicer(chopper_pb2_grpc.chopperServicer):
     def Chop(self, request, context):
-        dataFiles = os.listdir("./data")
-        for file in dataFiles:
-            os.remove(f"./data/{file}")
-
         videoHash = request.hash
         originalStatus = redisClient.get(videoHash)
         # Check if the video is ready to chop
@@ -52,12 +48,21 @@ class ChopperServicer(chopper_pb2_grpc.chopperServicer):
         dataFiles = os.listdir("./data")
         for file in dataFiles:
             os.remove(f"./data/{file}")
+
+        return chopper_pb2.chopReply(err=0)
+        
+
+class checkConnectionServicer(checkConnection_pb2_grpc.checkConnectionServicer):
+    def CheckConnection(self, request, context):
+        print(request.message)
+        return checkConnection_pb2.checkReply(message="Hello from chopper")
         
 
 def grpc_main():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     chopper_pb2_grpc.add_chopperServicer_to_server(ChopperServicer(), server)
-    server.add_insecure_port('[::]:50051')
+    checkConnection_pb2_grpc.add_checkConnectionServicer_to_server(checkConnectionServicer(), server)
+    server.add_insecure_port(f'[::]:{constants.CHOPPER_PORT}')
     server.start()
     server.wait_for_termination()
 

@@ -7,6 +7,8 @@ eztopo_utils.egg-info/PKG-INFO
 eztopo_utils.egg-info/SOURCES.txt
 eztopo_utils.egg-info/dependency_links.txt
 eztopo_utils.egg-info/top_level.txt
-eztopo_utils/chopper/__init__.py
-eztopo_utils/chopper/chopper_pb2.py
-eztopo_utils/chopper/chopper_pb2_grpc.py
+eztopo_utils/grpc/__init__.py
+eztopo_utils/grpc/checkConnection_pb2.py
+eztopo_utils/grpc/checkConnection_pb2_grpc.py
+eztopo_utils/grpc/chopper_pb2.py
+eztopo_utils/grpc/chopper_pb2_grpc.py

@@ -5,6 +5,7 @@ metadata:
   labels:
     app: redis
 spec:
+  clusterIP: 10.98.162.175
   ports:
     - protocol: "TCP"
       port: 50051
