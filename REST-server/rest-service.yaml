@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: eztopo-rest
   labels:
-    app: redis
+    app: eztopo-rest
 spec:
   ports:
     - protocol: "TCP"

@@ -1,5 +1,9 @@
 # EZTopo
 
+Starting the cluster:
+
+1. Run deploy-local.sh
+
 If you make changes to eztopo_utils:
 
 1. Navigate to eztopo directory

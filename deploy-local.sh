@@ -12,6 +12,10 @@ kubectl apply -f ./object-store/minio-external-service.yaml
 kubectl apply -f ./rest-server/rest-deployment.yaml
 kubectl apply -f ./rest-server/rest-service.yaml
 
+# Web
+kubectl apply -f ./web-server/web-deployment.yaml
+kubectl apply -f ./web-server/web-service.yaml
+
 # Chopper
 kubectl apply -f ./data-processing/frame-chopper/chopper-deployment.yaml
 kubectl apply -f ./data-processing/frame-chopper/chopper-service.yaml
