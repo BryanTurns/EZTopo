@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name='eztopo_utils',
-    version='0.1.5',
+    version='0.1.6',
     author='BryanTurns',
     author_email='turnsbryan@gmail.com',
     description='A short description of your package',

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
+import axios from "axios";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -13,58 +14,55 @@ function App() {
 
   const handleFileUpload = () => {
     console.log("UPLOADING!");
-    console.log(selectedFile);
     if (!selectedFile) {
       alert("Please select a file to upload.");
       return;
     }
 
-    const chunkSize = 5 * 1024 * 1024; // 5MB (adjust based on your requirements)
+    const chunkSize = 5 * 1024; // 5MB (adjust based on your requirements)
     const totalChunks = Math.ceil(selectedFile.size / chunkSize);
     const chunkProgress = 100 / totalChunks;
     let chunkNumber = 0;
     let start = 0;
-    let end = 0;
+    let end = chunkSize;
 
-    const uploadNextChunk = async () => {
+    while (chunkNumber < totalChunks) {
       if (end <= selectedFile.size) {
         const chunk = selectedFile.slice(start, end);
-        const formData = new FormData();
-        formData.append("file", chunk);
-        formData.append("chunkNumber", chunkNumber);
-        formData.append("totalChunks", totalChunks);
-        formData.append("originalname", selectedFile.name);
-
-        fetch("http://localhost:80/api/uploadVideo", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            const temp = `Chunk ${
-              chunkNumber + 1
-            }/${totalChunks} uploaded successfully`;
-            setStatus(temp);
-            setProgress(Number((chunkNumber + 1) * chunkProgress));
-            console.log(temp);
-            console.log(data);
-            chunkNumber++;
-            start = end;
-            end = start + chunkSize;
-            uploadNextChunk();
+        var requestBody = {
+          chunk: "",
+          chunkNumber: chunkNumber,
+          totalChunks: totalChunks,
+          originalName: selectedFile.name,
+        };
+        chunk
+          .arrayBuffer()
+          .then((arrayBuffer) => {
+            var base64String = _arrayBufferToBase64(arrayBuffer);
+            requestBody["chunk"] = base64String;
+            var request = axios
+              .post("http://localhost:80/api/uploadChunk", requestBody)
+              .then((response) => {
+                console.log(response.status);
+              })
+              .catch((error) => {
+                console.log("Error in request: ", error);
+              });
           })
           .catch((error) => {
-            console.error("Error uploading chunk:", error);
+            console.log("Error in arraybuffer: ", error);
           });
+        console.log("Chunk " + chunkNumber + " uploaded.");
+        chunkNumber++;
+        start = end;
+        end = start + chunkSize;
       } else {
         setProgress(100);
         setSelectedFile(null);
         setStatus("File upload completed");
+        break;
       }
-    };
-
-    uploadNextChunk();
+    }
   };
 
   return (
@@ -85,3 +83,13 @@ function App() {
 }
 
 export default App;
+
+function _arrayBufferToBase64(buffer) {
+  var binary = "";
+  var bytes = new Uint8Array(buffer);
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}

@@ -10,6 +10,7 @@ REDIS_PORT = 6379
 MINIO_HOST = "minio-proj.minio-ns.svc.cluster.local:9000"
 MINIO_USER = "rootuser"
 MINIO_PASSWORD = "rootpass123"
+BUCKET_NAME = "eztopo-bucket"
 # Rest 
 REST_HOST = "10.109.150.175"
 REST_PORT = 5000
