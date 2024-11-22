@@ -11,6 +11,8 @@ kubectl apply -f ./object-store/minio-external-service.yaml
 # REST
 kubectl apply -f ./rest-server/rest-deployment.yaml
 kubectl apply -f ./rest-server/rest-service.yaml
+# kubectl port-forward svc/eztopo-rest 5000:5000 & 
+
 
 # Web
 kubectl apply -f ./web-server/web-deployment.yaml

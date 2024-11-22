@@ -5,6 +5,7 @@ metadata:
   labels:
     app: eztopo-web
 spec:
+  clusterIP: "10.96.75.120"
   ports:
     - protocol: "TCP"
       port: 3000
