@@ -2,10 +2,11 @@
 
 If you make changes to eztopo_utils:
 
-1. change setup.py version
-2. python3 setup.py sdist
-3. python3 setup.py bdist_wheel
-4. python3 -m twine upload dist/\*
+1. Navigate to eztopo directory
+2. Update setup.py version
+3. python3 setup.py sdist
+4. python3 setup.py bdist_wheel
+5. python3 -m twine upload dist/\*
 
 If you change any proto:
 
