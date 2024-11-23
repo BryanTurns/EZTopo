@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eztopo-predictor
+spec:
+  selector:
+    matchLabels:
+      app: eztopo-predictor
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: eztopo-predictor
+    spec:
+      containers:
+        - name: master
+          image: bryanturns/eztopo-predictor:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50051
