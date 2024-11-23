@@ -7,7 +7,7 @@ RUN mkdir /app && \
 
 WORKDIR /app
 
-COPY frame-processor.py /app/frame-processor.py
+COPY position-predictor.py /app/position-predictor.py
 COPY startup.sh /app/startup.sh
 
 CMD [ "/bin/bash", "-c", "./startup.sh"]
