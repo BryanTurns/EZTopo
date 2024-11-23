@@ -1,5 +1,20 @@
 # EZTopo
 
+Project Structure:
+
+1. The frontend is under the web-server directory. Refer to ./web-server/README.md for more information. The frontend is only responsible for getting, sending, and displaying user data.
+2. The backend REST server is under the rest-server directory. Refer to ./rest-server for more information. The REST service is responsible for storing the raw video and making calls to the frame-chopper service.
+3. The message queue is under message-queue. Refer to ./message-queue/README.md for more information. It is currently implemented with Redis.
+4. Object storage is done under ./object-store. Refer to ./object-store/README.md for more information. It is currently implemented with Minio.
+5. Networking (ingress) is done under ./networking. Refer to ./networking/README.md for more information. It is currently implemented with ngix.
+6. GRPC and other utilties like constants exist under ./eztopo_utils.
+
+Running the Code:
+
+1. Install docker and enable kubernetes
+2. Run ./deploy-local.sh
+3. The frontend will now be accessible at localhost:80
+
 Starting the cluster:
 
 1. Run deploy-local.sh
