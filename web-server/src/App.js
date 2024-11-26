@@ -6,6 +6,7 @@ function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [status, setStatus] = useState("");
   const [progress, setProgress] = useState(0);
+  const [username, setUsername] = useState("Guest");
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -19,9 +20,8 @@ function App() {
       return;
     }
 
-    const chunkSize = 5 * 1024; // 5MB (adjust based on your requirements)
-    // const totalChunks = Math.ceil(selectedFile.size / chunkSize);
-    const totalChunks = 1;
+    const chunkSize = 5 * 1024 * 1024; // 5MB (adjust based on your requirements)
+    const totalChunks = Math.ceil(selectedFile.size / chunkSize);
     const chunkProgress = 100 / totalChunks;
     let chunkNumber = 0;
     let start = 0;
@@ -29,52 +29,13 @@ function App() {
 
     while (chunkNumber < totalChunks) {
       if (end <= selectedFile.size) {
-        const chunk = selectedFile.slice(start, end);
-        const data = new FormData();
-        data.append("file", chunk, "boulder.mp4");
-        fetch("http://localhost:5000/api/uploadChunk", {
-          method: "POST",
-          body: data,
-        })
-          .then((res) => {
-            console.log("success ", res);
-            console.log("status", res.status);
-            return res.json();
-          })
-          .then((data) => {
-            console.log(data);
-          })
-          .catch((error) => {
-            console.log("Fetch failed: ", error);
-          });
-        // var requestBody = {
-        //   chunk: "",
-        //   chunkNumber: chunkNumber,
-        //   totalChunks: totalChunks,
-        //   originalName: selectedFile.name,
-        // };
-        // chunk
-        //   .arrayBuffer()
-        //   .then((arrayBuffer) => {
-        //     var base64String = _arrayBufferToBase64(arrayBuffer);
-        //     requestBody["chunk"] = base64String;
-        //     var request = axios
-        //       .post("http://localhost:5000/api/uploadChunk", requestBody)
-        //       .then((response) => {
-        //         console.log(response.status);
-        //       })
-        //       .catch((error) => {
-        //         console.log("Error in request: ", error);
-        //       });
-        //   })
-        //   .catch((error) => {
-        //     console.log("Error in arraybuffer: ", error);
-        //   });
-        console.log("Chunk " + chunkNumber + " uploaded.");
+        uploadChunk(selectedFile, start, end, username);
         chunkNumber++;
         start = end;
         end = start + chunkSize;
       } else {
+        uploadChunk(selectedFile, start, end, username);
+
         setProgress(100);
         setSelectedFile(null);
         setStatus("File upload completed");
@@ -111,12 +72,21 @@ function App() {
 
 export default App;
 
-function _arrayBufferToBase64(buffer) {
-  var binary = "";
-  var bytes = new Uint8Array(buffer);
-  var len = bytes.byteLength;
-  for (var i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
+function uploadChunk(selectedFile, start, end, username) {
+  const chunk = selectedFile.slice(start, end);
+  const data = new FormData();
+  data.append("file", chunk, "boulder.mp4");
+  data.append("username", username);
+  fetch("http://localhost:5000/api/uploadChunk", {
+    method: "POST",
+    body: data,
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Sending chunk failed (" + res.status + ")");
+      }
+    })
+    .catch((error) => {
+      console.log("Fetch failed: ", error);
+    });
 }

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, make_response, redirect
+from flask import Flask, jsonify, request, make_response
 import grpc, redis, sys
 from eztopo_utils.grpc import chopper_pb2, chopper_pb2_grpc, checkConnection_pb2, checkConnection_pb2_grpc
 import eztopo_utils.constants as constants 
@@ -27,16 +27,23 @@ chopperChannel = grpc.insecure_channel(f"{constants.CHOPPER_HOST}:{constants.CHO
 chopperStub = chopper_pb2_grpc.chopperStub(chopperChannel)
 chopperCheckConnectionStub = checkConnection_pb2_grpc.checkConnectionStub(chopperChannel)
 
-currentUploads = []
+uploadCounter = 0
 
 # @cross_origin
 @app.route("/api/uploadVideo", methods=["POST"])
 def chop_video():
     return jsonify({"status": "success"})
 
-# @app.route("/api/startUpload", methods=["POST"])
-# def start_upload():
+@app.route("/api/startUpload", methods=["POST"])
+def start_upload():
+    try:
+        requestData = request.get_json()
+    except Exception as e:
+        print("Failed to parse JSON: ", e)
+        return _corsify_actual_response(jsonify({"error": "Failed to parse JSON"}))
+    uploadCounter += 1
 
+    
 
 @app.route("/api/uploadChunk", methods=["POST", "OPTIONS"])
 def upload_chunk():
@@ -48,20 +55,18 @@ def upload_chunk():
     else:
         print("What happened here...?")
 
-    # print(request.form.get("file"))
     try:
         requestData = request.files
         print(requestData)
     except Exception as error:
         print("Invalid format: ", error)
-        return _corsify_actual_response(jsonify({}), 400)
+        return _corsify_actual_response(jsonify({}))
 
     # chunkHash = ""
 
     # response = {"hash": chunkHash}
-    return _corsify_actual_response(jsonify({"data": "skdjdsklfj"}))
-    # return redirect("http://localhost:3000", 302, make_response("skdskdjf", 200))
-    # return "coolio"
+    return _corsify_actual_response(jsonify({"data": "skdjdsklfj"})), 200
+
 
 
 @app.route("/api/checkStatus")
@@ -87,6 +92,4 @@ def _build_cors_preflight_response():
 
 def _corsify_actual_response(response):
     response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
-    response.headers.add("Vary", "origin")
-    # response.headers.add("Access-Control-Allow-Methods", "*")
     return response
