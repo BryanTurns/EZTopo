@@ -13,12 +13,26 @@ function App() {
     setSelectedFile(file);
   };
 
-  const handleFileUpload = () => {
+  const handleFileUpload = async () => {
     console.log("UPLOADING!");
     if (!selectedFile) {
       alert("Please select a file to upload.");
       return;
     }
+
+    const data = {
+      username: username,
+    };
+    const response = await fetch("http://localhost:5000/api/startUpload", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    const responseJson = await response.json();
+    const uuid = responseJson["uuid"];
 
     const chunkSize = 5 * 1024 * 1024; // 5MB (adjust based on your requirements)
     const totalChunks = Math.ceil(selectedFile.size / chunkSize);
@@ -29,12 +43,12 @@ function App() {
 
     while (chunkNumber < totalChunks) {
       if (end <= selectedFile.size) {
-        uploadChunk(selectedFile, start, end);
+        uploadChunk(selectedFile, start, end, uuid);
         chunkNumber++;
         start = end;
         end = start + chunkSize;
       } else {
-        uploadChunk(selectedFile, start, end);
+        uploadChunk(selectedFile, start, end, uuid);
 
         setProgress(100);
         setSelectedFile(null);
@@ -46,14 +60,7 @@ function App() {
 
   return (
     <div>
-      <form
-      // onSubmit={() => {
-      //   handleFileUpload();
-      //   return false;
-      // }}
-      // method="POST"
-      // action="http://localhost:5000/api/uploadChunk"
-      >
+      <form>
         <input
           type="file"
           id="videoUploadID"
@@ -72,10 +79,11 @@ function App() {
 
 export default App;
 
-function uploadChunk(selectedFile, start, end) {
+function uploadChunk(selectedFile, start, end, uuid) {
   const chunk = selectedFile.slice(start, end);
   const data = new FormData();
-  data.append("file", chunk, "boulder.mp4");
+  data.append("file", chunk, selectedFile.name);
+  data.append("uuid", uuid);
   fetch("http://localhost:5000/api/uploadChunk", {
     method: "POST",
     body: data,

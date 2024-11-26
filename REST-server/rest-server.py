@@ -1,8 +1,7 @@
 from flask import Flask, jsonify, request, make_response
-import grpc, redis, sys
+import grpc, redis, sys, hashlib, datetime
 from eztopo_utils.grpc import chopper_pb2, chopper_pb2_grpc, checkConnection_pb2, checkConnection_pb2_grpc
 import eztopo_utils.constants as constants 
-from eztopo_utils.fingerprint import generateFingerprintFromObject
 from minio import Minio
 # from flask_cors import CORS, cross_origin
 
@@ -34,14 +33,30 @@ uploadCounter = 0
 def chop_video():
     return jsonify({"status": "success"})
 
-@app.route("/api/startUpload", methods=["POST"])
+@app.route("/api/startUpload", methods=["POST", "OPTIONS"])
 def start_upload():
+    if request.method == "OPTIONS":
+        return _build_cors_preflight_response()
+    
     try:
         requestData = request.get_json()
     except Exception as e:
         print("Failed to parse JSON: ", e)
-        return _corsify_actual_response(jsonify({"error": "Failed to parse JSON"}))
-    uploadCounter += 1
+        return _corsify_actual_response(jsonify({"error": "Failed to parse JSON"})), 400
+    
+
+    try:
+        username = requestData["username"]
+    except Exception as e:
+        print("Request did not include username: ", e) 
+        return _corsify_actual_response(jsonify({"error": "Request did not include username"})), 400
+    
+    currentTime = str(datetime.datetime.now())
+    uuidPreHash = currentTime + username
+    uuid = str(hashlib.sha256(uuidPreHash.encode()).hexdigest())
+
+    return _corsify_actual_response(jsonify({"uuid": uuid})), 200
+    
 
     
 
@@ -50,17 +65,21 @@ def upload_chunk():
     # Handle CORS
     if request.method == "OPTIONS":
         return _build_cors_preflight_response()
-    elif request.method == "POST":
-        print("POST ATTEMPT")
-    else:
-        print("What happened here...?")
-
+    
     try:
-        requestData = request.files
-        print(requestData)
+        file = request.files["file"]
+        print(file)
     except Exception as error:
-        print("Invalid format: ", error)
-        return _corsify_actual_response(jsonify({}))
+        print("No file sent: ", error)
+        return _corsify_actual_response(jsonify({"error": "No file sent"})), 400
+    
+    try:
+        uuid = request.form.get("uuid")
+        print(uuid)
+    except Exception as error:
+        print("No uuid sent: ", error)
+        return _corsify_actual_response(jsonify({"error": "No uuid sent"}))
+
 
     # chunkHash = ""
 
