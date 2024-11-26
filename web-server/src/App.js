@@ -29,12 +29,12 @@ function App() {
 
     while (chunkNumber < totalChunks) {
       if (end <= selectedFile.size) {
-        uploadChunk(selectedFile, start, end, username);
+        uploadChunk(selectedFile, start, end);
         chunkNumber++;
         start = end;
         end = start + chunkSize;
       } else {
-        uploadChunk(selectedFile, start, end, username);
+        uploadChunk(selectedFile, start, end);
 
         setProgress(100);
         setSelectedFile(null);
@@ -72,11 +72,10 @@ function App() {
 
 export default App;
 
-function uploadChunk(selectedFile, start, end, username) {
+function uploadChunk(selectedFile, start, end) {
   const chunk = selectedFile.slice(start, end);
   const data = new FormData();
   data.append("file", chunk, "boulder.mp4");
-  data.append("username", username);
   fetch("http://localhost:5000/api/uploadChunk", {
     method: "POST",
     body: data,
