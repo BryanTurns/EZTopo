@@ -59,7 +59,7 @@ def upload_chunk():
     # chunkHash = ""
 
     # response = {"hash": chunkHash}
-    return _corsify_actual_response(make_response(jsonify({"data": "skdjdsklfj"}), 200))
+    return _corsify_actual_response(jsonify({"data": "skdjdsklfj"}))
     # return redirect("http://localhost:3000", 302, make_response("skdskdjf", 200))
     # return "coolio"
 

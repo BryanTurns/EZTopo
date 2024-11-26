@@ -39,7 +39,7 @@ function App() {
           .then((res) => {
             console.log("success ", res);
             console.log("status", res.status);
-            res.json();
+            return res.json();
           })
           .then((data) => {
             console.log(data);
