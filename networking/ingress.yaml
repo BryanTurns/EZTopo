@@ -13,6 +13,13 @@ spec:
     - host: localhost
       http:
         paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: eztopo-web
+                port:
+                  number: 3000
           - path: /api
             pathType: Prefix
             backend:

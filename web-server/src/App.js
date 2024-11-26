@@ -20,7 +20,8 @@ function App() {
     }
 
     const chunkSize = 5 * 1024; // 5MB (adjust based on your requirements)
-    const totalChunks = Math.ceil(selectedFile.size / chunkSize);
+    // const totalChunks = Math.ceil(selectedFile.size / chunkSize);
+    const totalChunks = 1;
     const chunkProgress = 100 / totalChunks;
     let chunkNumber = 0;
     let start = 0;
@@ -29,29 +30,46 @@ function App() {
     while (chunkNumber < totalChunks) {
       if (end <= selectedFile.size) {
         const chunk = selectedFile.slice(start, end);
-        var requestBody = {
-          chunk: "",
-          chunkNumber: chunkNumber,
-          totalChunks: totalChunks,
-          originalName: selectedFile.name,
-        };
-        chunk
-          .arrayBuffer()
-          .then((arrayBuffer) => {
-            var base64String = _arrayBufferToBase64(arrayBuffer);
-            requestBody["chunk"] = base64String;
-            var request = axios
-              .post("http://localhost:80/api/uploadChunk", requestBody)
-              .then((response) => {
-                console.log(response.status);
-              })
-              .catch((error) => {
-                console.log("Error in request: ", error);
-              });
+        const data = new FormData();
+        data.append("file", chunk, "boulder.mp4");
+        fetch("http://localhost:5000/api/uploadChunk", {
+          method: "POST",
+          body: data,
+        })
+          .then((res) => {
+            console.log("success ", res);
+            console.log("status", res.status);
+            res.json();
+          })
+          .then((data) => {
+            console.log(data);
           })
           .catch((error) => {
-            console.log("Error in arraybuffer: ", error);
+            console.log("Fetch failed: ", error);
           });
+        // var requestBody = {
+        //   chunk: "",
+        //   chunkNumber: chunkNumber,
+        //   totalChunks: totalChunks,
+        //   originalName: selectedFile.name,
+        // };
+        // chunk
+        //   .arrayBuffer()
+        //   .then((arrayBuffer) => {
+        //     var base64String = _arrayBufferToBase64(arrayBuffer);
+        //     requestBody["chunk"] = base64String;
+        //     var request = axios
+        //       .post("http://localhost:5000/api/uploadChunk", requestBody)
+        //       .then((response) => {
+        //         console.log(response.status);
+        //       })
+        //       .catch((error) => {
+        //         console.log("Error in request: ", error);
+        //       });
+        //   })
+        //   .catch((error) => {
+        //     console.log("Error in arraybuffer: ", error);
+        //   });
         console.log("Chunk " + chunkNumber + " uploaded.");
         chunkNumber++;
         start = end;
@@ -67,7 +85,14 @@ function App() {
 
   return (
     <div>
-      <form>
+      <form
+      // onSubmit={() => {
+      //   handleFileUpload();
+      //   return false;
+      // }}
+      // method="POST"
+      // action="http://localhost:5000/api/uploadChunk"
+      >
         <input
           type="file"
           id="videoUploadID"
@@ -76,7 +101,9 @@ function App() {
         ></input>
         <br></br>
         <br></br>
-        <input type="submit" onClick={() => handleFileUpload()}></input>
+        <button type="button" onClick={() => handleFileUpload()}>
+          Submit
+        </button>
       </form>
     </div>
   );

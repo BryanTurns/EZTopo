@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, redirect
 import grpc, redis, sys
 from eztopo_utils.grpc import chopper_pb2, chopper_pb2_grpc, checkConnection_pb2, checkConnection_pb2_grpc
 import eztopo_utils.constants as constants 
@@ -8,6 +8,7 @@ from minio import Minio
 
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 # cors = CORS(app)
 # app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -42,19 +43,25 @@ def upload_chunk():
     # Handle CORS
     if request.method == "OPTIONS":
         return _build_cors_preflight_response()
-    
+    elif request.method == "POST":
+        print("POST ATTEMPT")
+    else:
+        print("What happened here...?")
+
+    # print(request.form.get("file"))
     try:
-        requestData = request.get_json()
-        videoChunk = requestData['chunk']
+        requestData = request.files
+        print(requestData)
     except Exception as error:
         print("Invalid format: ", error)
         return _corsify_actual_response(jsonify({}), 400)
 
-    chunkHash = ""
+    # chunkHash = ""
 
-    response = {"hash": chunkHash}
-    print(response)
-    return _corsify_actual_response(jsonify(response), 200)
+    # response = {"hash": chunkHash}
+    return _corsify_actual_response(make_response(jsonify({"data": "skdjdsklfj"}), 200))
+    # return redirect("http://localhost:3000", 302, make_response("skdskdjf", 200))
+    # return "coolio"
 
 
 @app.route("/api/checkStatus")
@@ -73,11 +80,13 @@ def home():
 
 def _build_cors_preflight_response():
     response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
     response.headers.add('Access-Control-Allow-Headers', "*")
     response.headers.add('Access-Control-Allow-Methods', "*")
     return response
 
-def _corsify_actual_response(response, status):
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response, status
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+    response.headers.add("Vary", "origin")
+    # response.headers.add("Access-Control-Allow-Methods", "*")
+    return response
