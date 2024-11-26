@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request, make_response
 import grpc, redis, sys, hashlib, datetime
-from eztopo_utils.grpc import chopper_pb2, chopper_pb2_grpc, checkConnection_pb2, checkConnection_pb2_grpc
 import eztopo_utils.constants as constants 
 from minio import Minio
 # from flask_cors import CORS, cross_origin
@@ -11,20 +10,28 @@ app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 # cors = CORS(app)
 # app.config['CORS_HEADERS'] = 'Content-Type'
 
+LOCAL = True
 
-redisClient = redis.Redis(host=constants.REDIS_HOST, port=constants.REDIS_PORT)
+if not LOCAL:
+    redisClient = redis.Redis(host=constants.REDIS_HOST, port=constants.REDIS_PORT)
 
-minioHost = constants.MINIO_HOST
-minioUser = constants.MINIO_USER
-minioPasswd = constants.MINIO_PASSWORD
-minioClient = Minio(minioHost,
-               secure=False,
-               access_key=minioUser,
-               secret_key=minioPasswd)
+    minioHost = constants.MINIO_HOST
+    minioUser = constants.MINIO_USER
+    minioPasswd = constants.MINIO_PASSWORD
+    minioClient = Minio(minioHost,
+                secure=False,
+                access_key=minioUser,
+                secret_key=minioPasswd)
+else:
+    redisClient = redis.Redis(host="localhost", port=6379)
 
-chopperChannel = grpc.insecure_channel(f"{constants.CHOPPER_HOST}:{constants.CHOPPER_PORT}")
-chopperStub = chopper_pb2_grpc.chopperStub(chopperChannel)
-chopperCheckConnectionStub = checkConnection_pb2_grpc.checkConnectionStub(chopperChannel)
+    minioHost = "localhost:9000"
+    minioUser = constants.MINIO_USER
+    minioPasswd = constants.MINIO_PASSWORD
+    minioClient = Minio(minioHost,
+                secure=False,
+                access_key=minioUser,
+                secret_key=minioPasswd)
 
 uploadCounter = 0
 
@@ -54,6 +61,8 @@ def start_upload():
     currentTime = str(datetime.datetime.now())
     uuidPreHash = currentTime + username
     uuid = str(hashlib.sha256(uuidPreHash.encode()).hexdigest())
+
+    redisClient.set(uuid, constants.INITIAL_UPLOAD)
 
     return _corsify_actual_response(jsonify({"uuid": uuid})), 200
     
@@ -89,6 +98,10 @@ def upload_chunk():
     print(f"Recieved chunk {chunkNumber} of {chunk.filename} ({uuid})")
 
     # TODO: Make it work with minio/redis
+    chunkName = f"{uuid}-chunk-{chunkNumber}"
+    # res = minioClient.put_object("eztopo-bucket", chunkName, chunk)
+
+    # print(res)
     
     return _corsify_actual_response(jsonify({"data": "skdjdsklfj"})), 200
 

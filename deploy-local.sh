@@ -3,15 +3,18 @@
 # Redis
 kubectl apply -f ./message-queue/redis-deployment.yaml
 kubectl apply -f ./message-queue/redis-service.yaml
+kubectl port-forward svc/redis 6379:6379 &
 
 # Minio
 kubectl apply -f ./object-store/minio-deployment.yaml
-kubectl apply -f ./object-store/minio-external-service.yaml
+# kubectl apply -f ./object-store/minio-external-service.yaml
+kubectl apply -f ./object-store/minio-service.yaml
+kubectl port-forward svc/minio 9000:9000 &
 
 # REST
 kubectl apply -f ./rest-server/rest-deployment.yaml
 kubectl apply -f ./rest-server/rest-service.yaml
-kubectl port-forward svc/eztopo-rest 5000:5000 & 
+# kubectl port-forward svc/eztopo-rest 5000:5000 & 
 
 
 # Web
