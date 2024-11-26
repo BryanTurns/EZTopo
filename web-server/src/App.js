@@ -43,12 +43,12 @@ function App() {
 
     while (chunkNumber < totalChunks) {
       if (end <= selectedFile.size) {
-        uploadChunk(selectedFile, start, end, uuid);
+        uploadChunk(selectedFile, start, end, chunkNumber, uuid);
         chunkNumber++;
         start = end;
         end = start + chunkSize;
       } else {
-        uploadChunk(selectedFile, start, end, uuid);
+        uploadChunk(selectedFile, start, end, chunkNumber, uuid);
 
         setProgress(100);
         setSelectedFile(null);
@@ -79,10 +79,11 @@ function App() {
 
 export default App;
 
-function uploadChunk(selectedFile, start, end, uuid) {
+async function uploadChunk(selectedFile, start, end, chunkNumber, uuid) {
   const chunk = selectedFile.slice(start, end);
   const data = new FormData();
   data.append("file", chunk, selectedFile.name);
+  data.append("chunkNumber", chunkNumber);
   data.append("uuid", uuid);
   fetch("http://localhost:5000/api/uploadChunk", {
     method: "POST",

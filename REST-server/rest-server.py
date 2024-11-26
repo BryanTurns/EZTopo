@@ -67,23 +67,29 @@ def upload_chunk():
         return _build_cors_preflight_response()
     
     try:
-        file = request.files["file"]
-        print(file)
+        chunk = request.files["file"]
     except Exception as error:
         print("No file sent: ", error)
-        return _corsify_actual_response(jsonify({"error": "No file sent"})), 400
+        return _corsify_actual_response(jsonify({"error": "Request did not include file"})), 400
+    
+    try:
+        chunkNumber = request.form.get("chunkNumber")
+    except Exception as error:
+        print("No chunkNumber sent ", error)
+        return _corsify_actual_response(jsonify({"error": "Request did not include chunkNumber"})), 400
     
     try:
         uuid = request.form.get("uuid")
-        print(uuid)
     except Exception as error:
         print("No uuid sent: ", error)
-        return _corsify_actual_response(jsonify({"error": "No uuid sent"}))
+        return _corsify_actual_response(jsonify({"error": "Request did not include uuid"}))
+    
+    
 
+    print(f"Recieved chunk {chunkNumber} of {chunk.filename} ({uuid})")
 
-    # chunkHash = ""
-
-    # response = {"hash": chunkHash}
+    # TODO: Make it work with minio/redis
+    
     return _corsify_actual_response(jsonify({"data": "skdjdsklfj"})), 200
 
 
