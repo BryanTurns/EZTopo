@@ -13,53 +13,31 @@ function App() {
     setSelectedFile(file);
   };
 
-  const handleFileUpload = async () => {
+  const handleFileUpload = () => {
     console.log("UPLOADING!");
     if (!selectedFile) {
       alert("Please select a file to upload.");
       return;
     }
 
-    const data = {
-      username: username,
-    };
-    const response = await fetch("http://localhost:5000/api/startUpload", {
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("username", username);
+
+    const response = fetch("http://localhost:5000/api/uploadVideo", {
       method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    const responseJson = await response.json();
-    const uuid = responseJson["uuid"];
-
-    const chunkSize = 5 * 1024 * 1024; // 5MB (adjust based on your requirements)
-    const totalChunks = Math.ceil(selectedFile.size / chunkSize);
-    const chunkProgress = 100 / totalChunks;
-    let chunkNumber = 0;
-    let start = 0;
-    let end = chunkSize;
-
-    while (chunkNumber < totalChunks) {
-      if (end <= selectedFile.size) {
-        uploadChunk(selectedFile, start, end, chunkNumber, uuid).catch(
-          (error) => {
-            console.log("Failed to upload chunk: ", error);
-          }
-        );
-        chunkNumber++;
-        start = end;
-        end = start + chunkSize;
-      } else {
-        uploadChunk(selectedFile, start, end, chunkNumber, uuid);
-
-        setProgress(100);
-        setSelectedFile(null);
-        setStatus("File upload completed");
-        break;
-      }
-    }
+      body: formData,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        const uuid = data["uuid"];
+        console.log(uuid);
+      })
+      .catch((error) => {
+        console.log("Failed to fetch uploadVideo: ", error);
+      });
   };
 
   return (

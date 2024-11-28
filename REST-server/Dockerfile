@@ -2,7 +2,8 @@ FROM python:3.8
 
 RUN mkdir /app && \
     cd /app && \
-    mkdir data && \
+    mkdir ./data && \
+    mkdir ./data/input && \
     pip3 install --upgrade flask grpcio redis minio protobuf flask-cors
 
 WORKDIR /app
