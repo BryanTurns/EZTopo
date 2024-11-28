@@ -72,6 +72,30 @@ def upload_to_GCP(uuid, fname):
     return     
 
 
+@app.route("/api/checkStatus", methods=["POST", "OPTIONS"])
+def check_status():
+    if request.method == "OPTIONS":
+        return _build_cors_preflight_response()
+    
+    try:
+        requestData = request.get_json()
+    except Exception as error:
+        print("Invalid request format, expected json: ", error)
+        return _corsify_actual_response(jsonify({"error": "Invalid request format, expected json: "})), 400
+    try:
+        uuid = requestData["uuid"]
+    except Exception as error:
+        print("No uuid in request: ", error)
+        return _corsify_actual_response(jsonify({"error": "No uuid in request"}))
+    
+    status = int(redisClient.get(uuid))
+
+    return _corsify_actual_response(jsonify({"status": status})), 200
+        
+
+    
+
+
 def _build_cors_preflight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
