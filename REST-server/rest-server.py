@@ -1,14 +1,23 @@
 from flask import Flask, jsonify, request, make_response
-import grpc, redis, sys, hashlib, datetime
+import redis, sys, hashlib, datetime, os
 import eztopo_utils.constants as constants 
 from minio import Minio
+from google.cloud import storage
+from dotenv import load_dotenv
 # from flask_cors import CORS, cross_origin
 
+load_dotenv("../.env")
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
 # cors = CORS(app)
 # app.config['CORS_HEADERS'] = 'Content-Type'
+project_oath = os.getenv("OATH")
+project_name = os.getenv("PROJECT_NAME")
+bucket_name = os.getenv("BUCKET_NAME")
+storage_client = storage.Client()
+bucket = storage_client.bucket(bucket_name)
+
 
 LOCAL = True
 
@@ -26,8 +35,8 @@ else:
     redisClient = redis.Redis(host="localhost", port=6379)
 
     minioHost = "localhost:9000"
-    minioUser = constants.MINIO_USER
-    minioPasswd = constants.MINIO_PASSWORD
+    minioUser = "minioadmin"
+    minioPasswd = "minioadmin"
     minioClient = Minio(minioHost,
                 secure=False,
                 access_key=minioUser,
@@ -58,11 +67,15 @@ def start_upload():
         print("Request did not include username: ", e) 
         return _corsify_actual_response(jsonify({"error": "Request did not include username"})), 400
     
+    # Create a uuid based off time and username
     currentTime = str(datetime.datetime.now())
     uuidPreHash = currentTime + username
     uuid = str(hashlib.sha256(uuidPreHash.encode()).hexdigest())
 
     redisClient.set(uuid, constants.INITIAL_UPLOAD)
+    
+
+    
 
     return _corsify_actual_response(jsonify({"uuid": uuid})), 200
     
@@ -81,6 +94,8 @@ def upload_chunk():
         print("No file sent: ", error)
         return _corsify_actual_response(jsonify({"error": "Request did not include file"})), 400
     
+    chunk.seek(0)
+
     try:
         chunkNumber = request.form.get("chunkNumber")
     except Exception as error:
@@ -96,13 +111,18 @@ def upload_chunk():
     
 
     print(f"Recieved chunk {chunkNumber} of {chunk.filename} ({uuid})")
-
     # TODO: Make it work with minio/redis
     chunkName = f"{uuid}-chunk-{chunkNumber}"
-    # res = minioClient.put_object("eztopo-bucket", chunkName, chunk)
+    # res = minioClient.put_object("eztopo-bucket", chunkName, chunk, chunk.content_length, chunk.content_type)
 
     # print(res)
+
+    # storage_client = storage.Client()
     
+    blob = bucket.blob(chunkName)
+    blob.upload_from_file(chunk)
+    
+
     return _corsify_actual_response(jsonify({"data": "skdjdsklfj"})), 200
 
 
@@ -110,11 +130,6 @@ def upload_chunk():
 @app.route("/api/checkStatus")
 def check_status():
     return "Checking status"
-
-@app.route("/api/checkChopper")
-def hello_world():
-    response = chopperCheckConnectionStub.CheckConnection(checkConnection_pb2.checkMessage(message="Hello, World"))
-    return response.message
 
 @app.route("/api")
 def home():

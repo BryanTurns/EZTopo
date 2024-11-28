@@ -43,7 +43,11 @@ function App() {
 
     while (chunkNumber < totalChunks) {
       if (end <= selectedFile.size) {
-        uploadChunk(selectedFile, start, end, chunkNumber, uuid);
+        uploadChunk(selectedFile, start, end, chunkNumber, uuid).catch(
+          (error) => {
+            console.log("Failed to upload chunk: ", error);
+          }
+        );
         chunkNumber++;
         start = end;
         end = start + chunkSize;

@@ -6,10 +6,12 @@ kubectl apply -f ./message-queue/redis-service.yaml
 kubectl port-forward svc/redis 6379:6379 &
 
 # Minio
-kubectl apply -f ./object-store/minio-deployment.yaml
+# kubectl apply -f ./object-store/minio-deployment.yaml
 # kubectl apply -f ./object-store/minio-external-service.yaml
-kubectl apply -f ./object-store/minio-service.yaml
-kubectl port-forward svc/minio 9000:9000 &
+# kubectl apply -f ./object-store/minio-service.yaml
+# kubectl apply -f ./object-store/minio-dev.yaml
+# kubectl port-forward pod/minio 9000:9000 -n minio-dev &
+
 
 # REST
 kubectl apply -f ./rest-server/rest-deployment.yaml
