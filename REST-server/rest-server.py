@@ -12,7 +12,7 @@ constants = {"PROJECT_NAME": os.getenv("PROJECT_NAME"),
             "BUCKET_NAME": os.getenv("BUCKET_NAME"),
             "USER_UPLOAD_INITIATED": os.getenv("USER_UPLOAD_INITIATED"),
             "USER_UPLOAD_COMPLETE": os.getenv("USER_UPLOAD_COMPLETE"),
-            "USER_UPLOAD_PATH": os.getenv("USER_UPLOAD_PATH")}
+            "USER_UPLOAD_PATH": "./data/input"}
 
 storage_client = storage.Client()
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
@@ -42,8 +42,9 @@ def start_upload():
     uuid = str(hashlib.sha256(uuidPreHash.encode()).hexdigest())
 
     redisClient.set(uuid, constants["USER_UPLOAD_INITIATED"])
+    redisClient.rpush(username, uuid)
 
-    fname = f"{username}-Upload-{uuid}"
+    fname = f"Upload-{uuid}"
     userFile.save(f"{constants['USER_UPLOAD_PATH']}/{fname}")
     # TODO: ADD COMPRESSION
     threading.Thread(target=upload_to_GCP, args=(uuid, fname)).start()
@@ -62,7 +63,7 @@ def upload_to_GCP(uuid, fname):
         print("Could not upload blob: ", error)
 
     redisClient.set(uuid, constants["USER_UPLOAD_COMPLETE"])
-    redisClient.lpush("chopQueue", uuid)
+    redisClient.rpush("chopQueue", uuid)
 
     print(f"{fname} upload complete")
 
