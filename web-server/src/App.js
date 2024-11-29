@@ -37,6 +37,7 @@ function App() {
         statusLoop(uuid, setStatus);
       })
       .catch((error) => {
+        setStatus("Can't connect to server...");
         console.log("Failed to fetch uploadVideo: ", error);
       });
   };
@@ -76,6 +77,10 @@ async function statusLoop(uuid, setStatus) {
       })
       .then((data) => {
         setStatus(translateStatus(data["status"]));
+      })
+      .catch((error) => {
+        console.log("Can't connect to server: ", error);
+        setStatus("Can't connect to server...");
       });
     await sleep(1000);
   }
@@ -92,9 +97,9 @@ function translateStatus(status) {
     case 3:
       return "Uploaded to main server!";
     case 4:
-      return "Chopping your video up into frames...";
+      return "Splitting your video into chunks...";
     case 5:
-      return "Your video is chopped up into frames!";
+      return "Your video is split!";
     case 6:
       return "Running your frames through our model...";
     case 7:

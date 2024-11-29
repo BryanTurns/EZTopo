@@ -63,7 +63,7 @@ def upload_frames_to_GCP(uuid, framesCapturedCount):
         os.remove(f"{constants['UPLOAD_PATH']}/{filename}")
 
     redisClient.set(uuid, constants["CHOPPED"])
-    redisClient.rpush("predictorQueue", uuid)
+    redisClient.rpush("predictorQueue", f"{uuid} {framesCapturedCount}")
     
 
 
