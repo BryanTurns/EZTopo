@@ -75,7 +75,7 @@ async function statusLoop(uuid, setStatus) {
         return response.json();
       })
       .then((data) => {
-        setStatus(data["status"]);
+        setStatus(translateStatus(data["status"]));
       });
     await sleep(1000);
   }
@@ -95,6 +95,10 @@ function translateStatus(status) {
       return "Chopping your video up into frames...";
     case 5:
       return "Your video is chopped up into frames!";
+    case 6:
+      return "Running your frames through our model...";
+    case 7:
+      return "Your body positions have been estimated!";
   }
 }
 export default App;
