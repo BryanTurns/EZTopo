@@ -14,6 +14,7 @@ function App() {
   };
 
   const handleFileUpload = () => {
+    setStatus("Initiating upload..");
     console.log("UPLOADING!");
     if (!selectedFile) {
       alert("Please select a file to upload.");
@@ -33,7 +34,6 @@ function App() {
       })
       .then((data) => {
         const uuid = data["uuid"];
-        console.log(uuid);
         statusLoop(uuid, setStatus);
       })
       .catch((error) => {
@@ -83,6 +83,19 @@ async function statusLoop(uuid, setStatus) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function translateStatus(status) {
+  switch (status) {
+    case 2:
+      return "Uploading to main server...";
+    case 3:
+      return "Uploaded to main server!";
+    case 4:
+      return "Chopping your video up into frames...";
+    case 5:
+      return "Your video is chopped up into frames!";
+  }
 }
 export default App;
 
