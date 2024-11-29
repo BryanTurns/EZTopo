@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from google.cloud import storage
 import cv2, os, redis
 
-
 print("Loading environment variables")
 load_dotenv("../../.env")
 constants = {"BUCKET_NAME": os.getenv("BUCKET_NAME"),
@@ -25,7 +24,9 @@ model = YOLO(f"./models/yolo11s-pose.pt")
 
 def main():
     while True:
+        print("Waiting to predict...")
         uuid = redisClient.blpop("predictorQueue")[1].decode()
+        print(f"Predicting for {uuid}")
 
 if __name__ == "__main__":
     main()

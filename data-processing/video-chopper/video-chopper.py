@@ -22,10 +22,10 @@ bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
 def  main():
     while True:
-        print("Waiting for work...")
+        print("Waiting to chop...")
         uuid = redisClient.blpop("chopQueue")[1].decode()
         redisClient.set(uuid, constants["CHOPPING"])
-        print(f"Working on {uuid}")
+        print(f"Chopping {uuid}")
 
         blobName = f"Upload-{uuid}"
         blob = bucket.blob(blobName)
