@@ -71,7 +71,9 @@ def predictor_work(uuid, framesCapturedCount):
     redisClient.set(uuid, constants["PREDICTED"])
     redisClient.rpush("outputQueue", uuid)
 
-    
+    for localFrame in localFramePaths:
+        os.remove(localFrame)
+    os.remove(json_filepath)
     
 
 
