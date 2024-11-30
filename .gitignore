@@ -8,6 +8,7 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 **/data/input/*
+**/data/output/*
 **/lib
 **/web_modules
 **/Include
