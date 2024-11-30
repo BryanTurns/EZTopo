@@ -8,6 +8,11 @@ lerna-debug.log*
 .pnpm-debug.log*
 
 **/data
+**/lib
+**/web_modules
+**/Include
+**/Scripts
+**/venv
 
 build/
 __pycache__

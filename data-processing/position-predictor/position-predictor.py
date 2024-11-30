@@ -1,7 +1,7 @@
 from ultralytics import YOLO
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from google.cloud import storage
-import cv2, os, redis, threading
+import os, redis, threading, json
 
 # print("Loading environment variables")
 # load_dotenv("../../.env")
@@ -29,8 +29,6 @@ model = YOLO(f"./models/yolo11s-pose.pt")
 
 def main():
     while True:
-        
-
         print("Waiting to predict...")
         data = redisClient.blpop("predictorQueue")[1].decode().split(" ")
         uuid = data[0]
@@ -41,14 +39,38 @@ def main():
         threading.Thread(target=predictor_work, args=(uuid, framesCapturedCount)).start()
 
 def predictor_work(uuid, framesCapturedCount):
-    blobNames = []
+    localFramePaths = []
     for frameNumber in range(framesCapturedCount):
-        blobNames.append(f"frame-{frameNumber}-{uuid}.jpg")
-        blob = bucket.blob(blobNames[frameNumber])
-        # with open(f"{constants['DOWNLOAD_PATH']}/{blobNames[frameNumber]}", "wb+") as currentFrameFile:
-        blob.download_to_filename(f"{constants['DOWNLOAD_PATH']}/{blobNames[frameNumber]}")
-    
+        frame_filename = f"frame-{frameNumber}-{uuid}.jpg"
+        frame_filepath = f"{constants['DOWNLOAD_PATH']}/{frame_filename}"
         
+        blob = bucket.blob(frame_filename)
+        blob.download_to_filename(frame_filepath)
+        localFramePaths.append(frame_filepath)
+    
+    # prediction data structure: https://stackoverflow.com/questions/75121807/what-are-keypoints-in-yolov7-pose
+    results = model.predict(localFramePaths)
+    hip_pos = []
+    for result in results:
+        right_hip = result.keypoints.xy[0][11]
+        left_hip = result.keypoints.xy[0][12]
+        av_x = (right_hip[0] + left_hip[0]) // 2 
+        av_y = (right_hip[1] + left_hip[1]) // 2
+        hip_pos.append((int(av_x), int(av_y)))
+
+    hip_pos_json = json.dumps(hip_pos)
+    json_filename = f"{uuid}.json"
+    json_filepath = f"{constants['UPLOAD_PATH']}/{json_filename}"
+    with open(json_filepath, "w+") as json_file:
+        json_file.write(hip_pos_json)
+
+
+    # blob = bucket.blob(json_filename)
+    # blob.upload_from_filename()
+
+
+    
+
 
 if __name__ == "__main__":
     main()
