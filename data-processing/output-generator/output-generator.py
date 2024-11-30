@@ -36,7 +36,7 @@ def main():
 
     inputVideoObject = cv2.VideoCapture(inputVideoFilepath)
     fps = int(inputVideoObject.get(cv2.CAP_PROP_FPS))
-    dimensions = (int(inputVideoObject.get(cv2.CAP_PROP_FRAME_WIDTH)), int(videoObject.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    dimensions = (int(inputVideoObject.get(cv2.CAP_PROP_FRAME_WIDTH)), int(inputVideoObject.get(cv2.CAP_PROP_FRAME_HEIGHT)))
     outputVideoFilepath = f"{constants['UPLOAD_PATH']}/Output-{uuid}.mp4"
     outputVideoObject = cv2.VideoWriter(outputVideoFilepath, cv2.VideoWriter_fourcc(*'mp4v'), fps, dimensions)
 
