@@ -30,7 +30,7 @@ def  main():
         blobName = f"Upload-{uuid}"
         blob = bucket.blob(blobName)
         blob.download_to_filename(f"{constants['DOWNLOAD_PATH']}/{blobName}")
-        
+
         videoObject = cv2.VideoCapture(f"{constants['DOWNLOAD_PATH']}/{blobName}")
         fps = int(videoObject.get(cv2.CAP_PROP_FPS))
         # Every frameCaptureInteval seconds, save a frame
@@ -58,14 +58,12 @@ def upload_frames_to_GCP(uuid, framesCapturedCount):
         blobName = f"frame-{frameNumber}-{uuid}.jpg"
         blob = bucket.blob(blobName)
         blob.upload_from_filename(f"{constants['UPLOAD_PATH']}/{blobName}")
-    
-    for filename in os.listdir(constants["UPLOAD_PATH"]):
-        os.remove(f"{constants['UPLOAD_PATH']}/{filename}")
 
     redisClient.set(uuid, constants["CHOPPED"])
     redisClient.rpush("predictorQueue", f"{uuid} {framesCapturedCount}")
     
-
+    for filename in os.listdir(constants["UPLOAD_PATH"]):
+        os.remove(f"{constants['UPLOAD_PATH']}/{filename}")
 
 if __name__ == "__main__":
     main()

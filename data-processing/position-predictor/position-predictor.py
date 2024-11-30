@@ -46,6 +46,7 @@ def predictor_work(uuid, framesCapturedCount):
         
         blob = bucket.blob(frame_filename)
         blob.download_to_filename(frame_filepath)
+        blob.delete()
         localFramePaths.append(frame_filepath)
     
     # prediction data structure: https://stackoverflow.com/questions/75121807/what-are-keypoints-in-yolov7-pose
@@ -74,6 +75,10 @@ def predictor_work(uuid, framesCapturedCount):
     for localFrame in localFramePaths:
         os.remove(localFrame)
     os.remove(json_filepath)
+
+
+
+
     
 
 
