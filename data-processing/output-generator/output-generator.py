@@ -18,11 +18,11 @@ bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
 def main():
     print("Waiting to generate output...")
-    uuid = redisClient.blpop("outputQueue").decode()
+    uuid = redisClient.blpop("outputQueue")[1].decode()
     print("Generating output!")
 
     blobName = f"{uuid}.json"
-    json_filepath = f"{constants["DOWNLOAD_PATH"]}/{blobName}"
+    json_filepath = f"{constants['DOWNLOAD_PATH']}/{blobName}"
     blob = bucket.blob(blobName)
     blob.download_to_filename(json_filepath)
 
