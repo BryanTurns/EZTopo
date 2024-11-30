@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./App.css";
-import axios from "axios";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -57,7 +56,7 @@ function App() {
           Submit
         </button>
       </form>
-      <p>Status: {status}</p>
+      <p className="font-bold">Status: {status}</p>
     </div>
   );
 }
@@ -104,6 +103,10 @@ function translateStatus(status) {
       return "Running your frames through our model...";
     case 7:
       return "Your body positions have been estimated!";
+    case 8:
+      return "Drawing your path onto the original video...";
+    case 9:
+      return "Your path has been drawn!";
   }
 }
 export default App;
