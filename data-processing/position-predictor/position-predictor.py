@@ -65,10 +65,13 @@ def predictor_work(uuid, framesCapturedCount):
         json_file.write(hip_pos_json)
 
 
-    # blob = bucket.blob(json_filename)
-    # blob.upload_from_filename()
+    blob = bucket.blob(json_filename)
+    blob.upload_from_filename(json_filepath)
 
+    redisClient.set(uuid, constants["PREDICTED"])
+    redisClient.rpush("outputQueue", uuid)
 
+    
     
 
 
