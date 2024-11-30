@@ -51,19 +51,19 @@ def predictor_work(uuid, framesCapturedCount):
     
     # prediction data structure: https://stackoverflow.com/questions/75121807/what-are-keypoints-in-yolov7-pose
     results = model.predict(localFramePaths)
-    hip_pos = []
+    hip_position = []
     for result in results:
         right_hip = result.keypoints.xy[0][11]
         left_hip = result.keypoints.xy[0][12]
         av_x = (right_hip[0] + left_hip[0]) // 2 
         av_y = (right_hip[1] + left_hip[1]) // 2
-        hip_pos.append((int(av_x), int(av_y)))
+        hip_position.append((int(av_x), int(av_y)))
 
-    hip_pos_json = json.dumps(hip_pos)
+    hip_position_json = json.dumps(hip_position)
     json_filename = f"{uuid}.json"
     json_filepath = f"{constants['UPLOAD_PATH']}/{json_filename}"
     with open(json_filepath, "w+") as json_file:
-        json_file.write(hip_pos_json)
+        json_file.write(hip_position_json)
 
 
     blob = bucket.blob(json_filename)
