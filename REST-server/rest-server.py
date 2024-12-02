@@ -52,25 +52,7 @@ def start_upload():
     return _corsify_actual_response(jsonify({"uuid": uuid})), 200
 
 
-def upload_to_GCP(uuid, fname):
-    try:
-        blob = bucket.blob(fname)
-    except Exception as error:
-        print("Could not create blob: ", error)
-    try: 
-        blob.upload_from_filename(f"{constants['USER_UPLOAD_PATH']}/{fname}")
-    except Exception as error:
-        print("Could not upload blob: ", error)
-
-    redisClient.set(uuid, constants["USER_UPLOAD_COMPLETE"])
-    redisClient.rpush("chopQueue", uuid)
-
-    print(f"{fname} upload complete")
-
-    for filename in os.listdir(constants["USER_UPLOAD_PATH"]):
-        os.remove(f"{constants['USER_UPLOAD_PATH']}/{filename}")
-
-    return     
+@app.route("/api/getOutputVideo", methods=["POST", "OPTIONS"])
 
 
 @app.route("/api/checkStatus", methods=["POST", "OPTIONS"])
@@ -109,6 +91,26 @@ def _corsify_actual_response(response):
     response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
     return response
 
+
+def upload_to_GCP(uuid, fname):
+    try:
+        blob = bucket.blob(fname)
+    except Exception as error:
+        print("Could not create blob: ", error)
+    try: 
+        blob.upload_from_filename(f"{constants['USER_UPLOAD_PATH']}/{fname}")
+    except Exception as error:
+        print("Could not upload blob: ", error)
+
+    redisClient.set(uuid, constants["USER_UPLOAD_COMPLETE"])
+    redisClient.rpush("chopQueue", uuid)
+
+    print(f"{fname} upload complete")
+
+    for filename in os.listdir(constants["USER_UPLOAD_PATH"]):
+        os.remove(f"{constants['USER_UPLOAD_PATH']}/{filename}")
+
+    return     
 
 # @app.route("/api/startUpload", methods=["POST", "OPTIONS"])
 # def start_upload():
