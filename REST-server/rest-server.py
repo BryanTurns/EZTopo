@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, send_file
 import redis, hashlib, datetime, os, threading
 from google.cloud import storage
 from dotenv import load_dotenv
@@ -7,16 +7,20 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
+print("Loading environment variables")
 load_dotenv("../.env")
 constants = {"PROJECT_NAME": os.getenv("PROJECT_NAME"), 
             "BUCKET_NAME": os.getenv("BUCKET_NAME"),
             "USER_UPLOAD_INITIATED": os.getenv("USER_UPLOAD_INITIATED"),
             "USER_UPLOAD_COMPLETE": os.getenv("USER_UPLOAD_COMPLETE"),
-            "USER_UPLOAD_PATH": "./data/input"}
+            "USER_UPLOAD_PATH": "./data/input",
+            "OUTPUT_PATH": "./data/output"}
 
+print("Initiating storage")
 storage_client = storage.Client()
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
+print("Initiating redis")
 redisClient = redis.Redis(host="localhost", port=6379)
 
 
@@ -53,8 +57,30 @@ def start_upload():
 
 
 @app.route("/api/getOutputVideo", methods=["POST", "OPTIONS"])
+def getOutput():
+    if request.method == "OPTIONS":
+        return _build_cors_preflight_response()
+    
+    try:
+        requestData = request.get_json()
+    except Exception as error:
+        print("Invalid request format, expected json: ", error)
+        return _corsify_actual_response(jsonify({"error": "Invalid request format, expected json: "})), 400
+    try:
+        uuid = requestData["uuid"]
+    except Exception as error:
+        print("No uuid in request: ", error)
+        return _corsify_actual_response(jsonify({"error": "No uuid in request"}))
+    
+    outputFilename = f"Output-{uuid}.mp4"
+    outputFilepath = f"{constants['OUTPUT_PATH']}/{outputFilename}"
+    blob = bucket.blob(outputFilename)
+    with open(outputFilepath, "wb") as outputFileobject:
+        blob.download_to_file(outputFileobject)
+    
+    return _corsify_actual_response(send_file(outputFilepath, as_attachment=True))
 
-
+    # return _corsify_actual_response(jsonify()), 200
 @app.route("/api/checkStatus", methods=["POST", "OPTIONS"])
 def check_status():
     if request.method == "OPTIONS":

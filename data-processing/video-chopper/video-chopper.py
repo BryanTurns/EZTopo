@@ -44,6 +44,7 @@ def  main():
                 savePath = f"{constants['UPLOAD_PATH']}/frame-{frameNumber}-{uuid}.jpg"
                 cv2.imwrite(savePath, image)
             n = n + 1
+        videoObject.release()
         framesCapturedCount = n // frameCaptureInterval
         
         for filename in os.listdir(constants["DOWNLOAD_PATH"]):

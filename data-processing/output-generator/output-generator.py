@@ -42,7 +42,7 @@ def main():
         fps = int(inputVideoObject.get(cv2.CAP_PROP_FPS))
         dimensions = (int(inputVideoObject.get(cv2.CAP_PROP_FRAME_WIDTH)), int(inputVideoObject.get(cv2.CAP_PROP_FRAME_HEIGHT)))
         outputVideoFilepath = f"{constants['UPLOAD_PATH']}/Output-{uuid}.mp4"
-        outputVideoObject = cv2.VideoWriter(outputVideoFilepath, cv2.VideoWriter_fourcc(*'mp4v'), fps, dimensions)
+        outputVideoObject = cv2.VideoWriter(outputVideoFilepath, cv2.VideoWriter_fourcc(*'avc1'), fps, dimensions)
 
         while True:
             success, inputFrame = inputVideoObject.read()
@@ -55,7 +55,7 @@ def main():
         inputVideoObject.release()
         outputVideoObject.release()
 
-        blobName = f"Output-{uuid}"
+        blobName = f"Output-{uuid}.mp4"
         blob = bucket.blob(blobName)
         blob.upload_from_filename(outputVideoFilepath)
 

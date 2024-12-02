@@ -6,6 +6,7 @@ function App() {
   const [status, setStatus] = useState("No Upload");
   const [progress, setProgress] = useState(0);
   const [username, setUsername] = useState("Guest");
+  const [outputURL, setOutputURL] = useState();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -21,6 +22,7 @@ function App() {
     }
 
     const formData = new FormData();
+    var uuid;
     formData.append("file", selectedFile);
     formData.append("username", username);
 
@@ -32,8 +34,10 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        const uuid = data["uuid"];
-        statusLoop(uuid, setStatus);
+        uuid = data["uuid"];
+        waitForProcessingFinish(uuid, setStatus).then(() => {
+          downloadVideo(uuid, setOutputURL);
+        });
       })
       .catch((error) => {
         setStatus("Can't connect to server...");
@@ -57,13 +61,21 @@ function App() {
         </button>
       </form>
       <p className="font-bold">Status: {status}</p>
+      {outputURL ? (
+        <video width="400" controls autoPlay>
+          <source type="video/mp4" src={outputURL}></source>
+        </video>
+      ) : (
+        <video></video>
+      )}
     </div>
   );
 }
 
-async function statusLoop(uuid, setStatus) {
+async function waitForProcessingFinish(uuid, setStatus) {
   var checkStatusBody = JSON.stringify({ uuid: uuid });
-  while (true) {
+  var dataBeingProcessed = true;
+  while (dataBeingProcessed) {
     fetch("http://localhost:5000/api/checkStatus", {
       method: "POST",
       body: checkStatusBody,
@@ -75,13 +87,14 @@ async function statusLoop(uuid, setStatus) {
         return response.json();
       })
       .then((data) => {
+        if (data["status"] == 9) dataBeingProcessed = false;
         setStatus(translateStatus(data["status"]));
       })
       .catch((error) => {
         console.log("Can't connect to server: ", error);
         setStatus("Can't connect to server...");
       });
-    await sleep(1000);
+    if (dataBeingProcessed) await sleep(1000);
   }
 }
 
@@ -110,6 +123,31 @@ function translateStatus(status) {
   }
 }
 export default App;
+
+function downloadVideo(uuid, setOutputURL) {
+  fetch("http://localhost:5000/api/getOutputVideo", {
+    method: "POST",
+    body: JSON.stringify({ uuid: uuid }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      console.log(response);
+      // var responseStream = response.body;
+      return response.blob();
+      // fs.writeFile("test.mp4", responseStream);
+    })
+    .then((blob) => {
+      console.log(blob);
+      const url = URL.createObjectURL(blob);
+      setOutputURL(url);
+      console.log(url);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
 
 // async function uploadChunk(selectedFile, start, end, chunkNumber, uuid) {
 //   const chunk = selectedFile.slice(start, end);
