@@ -27,13 +27,13 @@ def main():
 
         jsonBlobName = f"{uuid}.json"
         jsonFilepath = f"{constants['DOWNLOAD_PATH']}/{jsonBlobName}"
-        blob = bucket.blob(jsonBlobName)
-        blob.download_to_filename(jsonFilepath)
+        jsonBlob = bucket.blob(jsonBlobName)
+        jsonBlob.download_to_filename(jsonFilepath)
 
         videoBlobName = f"Upload-{uuid}"
         inputVideoFilepath = f"{constants['DOWNLOAD_PATH']}/{videoBlobName}"
-        blob = bucket.blob(videoBlobName)
-        blob.download_to_filename(inputVideoFilepath)
+        videoInputBlob = bucket.blob(videoBlobName)
+        videoInputBlob.download_to_filename(inputVideoFilepath)
 
         with open(jsonFilepath, "r") as json_file:
             position_data = json.load(json_file)
@@ -55,14 +55,20 @@ def main():
         inputVideoObject.release()
         outputVideoObject.release()
 
-        blobName = f"Output-{uuid}.mp4"
-        blob = bucket.blob(blobName)
+        outputBlobName = f"Output-{uuid}.mp4"
+        blob = bucket.blob(outputBlobName)
         blob.upload_from_filename(outputVideoFilepath)
 
         redisClient.set(uuid, constants["GENERATED_OUTPUT"])
 
         os.remove(jsonFilepath)
         os.remove(inputVideoFilepath)
+        os.remove(outputVideoFilepath)
+        videoInputBlob.delete()
+        jsonBlob.delete()
+
+
+
 
 if __name__ == "__main__":
     main()

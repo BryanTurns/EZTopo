@@ -77,7 +77,7 @@ def getOutput():
     blob = bucket.blob(outputFilename)
     with open(outputFilepath, "wb") as outputFileobject:
         blob.download_to_file(outputFileobject)
-    
+
     return _corsify_actual_response(send_file(outputFilepath, as_attachment=True))
 
     # return _corsify_actual_response(jsonify()), 200
