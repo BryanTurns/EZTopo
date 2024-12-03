@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 
 function App() {
@@ -7,6 +7,11 @@ function App() {
   const [progress, setProgress] = useState(0);
   const [username, setUsername] = useState("Guest");
   const [outputURL, setOutputURL] = useState();
+
+  // const videoPlayer = document.getElementById("videoPlayer");
+  // useEffect(() => {
+  //   videoPlayer.current.reload();
+  // }, [outputURL]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -36,7 +41,9 @@ function App() {
       .then((data) => {
         uuid = data["uuid"];
         waitForProcessingFinish(uuid, setStatus).then(() => {
+          setStatus("Retrieving your video...");
           downloadVideo(uuid, setOutputURL);
+          setStatus("Complete!");
         });
       })
       .catch((error) => {
@@ -48,7 +55,7 @@ function App() {
   return (
     <div className="grid-cols-2 grid h-screen ">
       <div className="text-center  p-2 bg-stone-300">
-        <h1 className="text-3xl py-2">
+        <h1 className="text-3xl ">
           Upload your climbing video and get your path drawn!
         </h1>
         <form>
@@ -57,6 +64,7 @@ function App() {
             id="videoUploadID"
             name="videoUpload"
             onChange={(event) => handleFileChange(event)}
+            accept="video/*"
           ></input>
           <br></br>
           <br></br>
@@ -65,6 +73,7 @@ function App() {
           </button>
         </form>
         <p className="font-bold">Status: {status}</p>
+        <p onClick={() => setOutputURL("example2.mp4")}>Click Me!</p>
       </div>
       <div className="bg-stone-400 h-full max-w-full relative">
         {outputURL ? (
@@ -72,7 +81,12 @@ function App() {
             <h1 className="text-3xl border-b-4 p-2 border-black">
               Your Topology:
             </h1>
-            <video className="w-full" controls autoPlay>
+            <video
+              className="w-full max-h-[80vh] bottom-0 absolute"
+              key={outputURL}
+              controls
+              autoPlay
+            >
               <source type="video/mp4" src={outputURL}></source>
             </video>
           </>
@@ -81,7 +95,11 @@ function App() {
             <h1 className="text-3xl border-b-4 p-2 border-black">
               Example Video:
             </h1>
-            <video className=" w-full max-h-[80vh] bottom-0 absolute" controls>
+            <video
+              id="videoPlayer"
+              className=" w-full max-h-[80vh] bottom-0 absolute"
+              controls
+            >
               <source src="example.mp4"></source>
             </video>
           </>
