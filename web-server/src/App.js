@@ -46,28 +46,47 @@ function App() {
   };
 
   return (
-    <div>
-      <form>
-        <input
-          type="file"
-          id="videoUploadID"
-          name="videoUpload"
-          onChange={(event) => handleFileChange(event)}
-        ></input>
-        <br></br>
-        <br></br>
-        <button type="button" onClick={() => handleFileUpload()}>
-          Submit
-        </button>
-      </form>
-      <p className="font-bold">Status: {status}</p>
-      {outputURL ? (
-        <video width="400" controls autoPlay>
-          <source type="video/mp4" src={outputURL}></source>
-        </video>
-      ) : (
-        <video></video>
-      )}
+    <div className="grid-cols-2 grid h-screen ">
+      <div className="text-center  p-2 bg-stone-300">
+        <h1 className="text-3xl py-2">
+          Upload your climbing video and get your path drawn!
+        </h1>
+        <form>
+          <input
+            type="file"
+            id="videoUploadID"
+            name="videoUpload"
+            onChange={(event) => handleFileChange(event)}
+          ></input>
+          <br></br>
+          <br></br>
+          <button type="button" onClick={() => handleFileUpload()}>
+            Submit
+          </button>
+        </form>
+        <p className="font-bold">Status: {status}</p>
+      </div>
+      <div className="bg-stone-400 h-full max-w-full relative">
+        {outputURL ? (
+          <>
+            <h1 className="text-3xl border-b-4 p-2 border-black">
+              Your Topology:
+            </h1>
+            <video className="w-full" controls autoPlay>
+              <source type="video/mp4" src={outputURL}></source>
+            </video>
+          </>
+        ) : (
+          <>
+            <h1 className="text-3xl border-b-4 p-2 border-black">
+              Example Video:
+            </h1>
+            <video className=" w-full max-h-[80vh] bottom-0 absolute" controls>
+              <source src="example.mp4"></source>
+            </video>
+          </>
+        )}
+      </div>
     </div>
   );
 }
