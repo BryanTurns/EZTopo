@@ -53,6 +53,8 @@ def predictor_work(uuid, framesCapturedCount):
     results = model.predict(localFramePaths)
     hip_position = []
     for result in results:
+        if result.keypoints.conf == None:
+            continue
         right_hip = result.keypoints.xy[0][11]
         left_hip = result.keypoints.xy[0][12]
         av_x = (right_hip[0] + left_hip[0]) // 2 

@@ -36,11 +36,14 @@ def main():
     # Calculate hip position at each frame 
     hip_pos = []
     for result in results:
+        print(result.keypoint.xy[0], flush=True)
+        # if result.keypoints.xy[0]
         right_hip = result.keypoints.xy[0][11]
         left_hip = result.keypoints.xy[0][12]
         av_x = (right_hip[0] + left_hip[0]) / 2
         av_y = (right_hip[1] + left_hip[1]) / 2
         hip_pos.append((int(av_x), int(av_y)))
+
     # Load the first frame and write the hip path onto it
     res_img = cv2.imread("./data/frames/frame0.jpg")
     for i in (range(len(hip_pos) - 1)):
