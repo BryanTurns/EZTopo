@@ -3,14 +3,6 @@ from ultralytics import YOLO
 from google.cloud import storage
 import os, redis, threading, json
 
-# print("Loading environment variables")
-# load_dotenv("../../.env")
-# constants = {"BUCKET_NAME": os.getenv("BUCKET_NAME"),
-#              "DOWNLOAD_PATH": "./data/input",
-#              "UPLOAD_PATH": "./data/output",
-#              "FRAME_TIME_INTERVAL": 2,
-#              "PREDICTING": os.getenv("PREDICTING"),
-#              "PREDICTED": os.getenv("PREDICTED")}
 constants = {"BUCKET_NAME": "eztopo-bucket",
              "PREDICTING": 6,
              "PREDICTED": 7,
@@ -18,10 +10,10 @@ constants = {"BUCKET_NAME": "eztopo-bucket",
              "UPLOAD_PATH": "./data/output"}
 
 print("Initiating Redis")
-redisClient = redis.Redis(host="localhost", port=6379)
+redisClient = redis.Redis(host="10.108.148.45", port=6379)
 
 print("Initiating storage")
-storage_client = storage.Client()
+storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
 print("Loading model")

@@ -18,20 +18,15 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libtiff-dev \
     gfortran \
-    libatlas-base-dev \
-    x264 \
-    libopencv-dev \
-    ffmpeg
-RUN pip3 install redis google-cloud-storage
-RUN pip3 install --no-binary opencv-python opencv-python
+    libatlas-base-dev 
+RUN pip3 install opencv-python redis google-cloud-storage 
+RUN pip3 install torch torch-vision ultralytics
 RUN mkdir /data && \
     mkdir /data/input && \
     mkdir /data/output
 
 COPY ./key.json key.json
 
-COPY ./output-generator.py output-generator.py
+COPY ./position-predictor.py position-predictor.py
 
-
-
-CMD [ "python3", "output-generator.py"]
+CMD [ "python3", "position-predictor.py"]
