@@ -1,4 +1,4 @@
-VERSION=v1.1.1.1.2
+VERSION=v1.1.1.1.4
 DOCKERUSER=bryanturns
 
 build:

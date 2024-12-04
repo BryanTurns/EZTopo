@@ -1,6 +1,12 @@
 import cv2, os, redis, json
 from google.cloud import storage
 
+def getKey():
+    with open("/etc/secret-volume/service-account", "r") as secretFile:
+        secretData = secretFile.read()
+    with open("./key.json", "w+") as keyFile:
+        keyFile.write(secretData)
+
 print("Loading environment variables")
 constants = {"BUCKET_NAME": "eztopo-bucket",
              "DOWNLOAD_PATH": "./data/input",
@@ -15,6 +21,7 @@ print("Initiating Redis")
 redisClient = redis.Redis(host=constants["REDIS_HOST"], port=constants["REDIS_PORT"])
 
 print("Initiating storage")
+getKey()
 storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
@@ -66,9 +73,6 @@ def main():
         os.remove(outputVideoFilepath)
         videoInputBlob.delete()
         jsonBlob.delete()
-
-
-
 
 if __name__ == "__main__":
     main()

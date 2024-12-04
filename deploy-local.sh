@@ -1,5 +1,9 @@
 #!/bin/bash
 
+./generatesecret.sh
+
+kubectl apply -f ./secret.yaml
+
 kubectl apply -f ./message-queue/redis-deployment.yaml
 kubectl apply -f ./message-queue/redis-service.yaml
 

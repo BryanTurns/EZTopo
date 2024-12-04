@@ -3,6 +3,12 @@ from ultralytics import YOLO
 from google.cloud import storage
 import os, redis, threading, json
 
+def getKey():
+    with open("/etc/secret-volume/service-account", "r") as secretFile:
+        secretData = secretFile.read()
+    with open("./key.json", "w+") as keyFile:
+        keyFile.write(secretData)
+
 constants = {"BUCKET_NAME": "eztopo-bucket",
              "PREDICTING": 6,
              "PREDICTED": 7,
@@ -13,6 +19,7 @@ print("Initiating Redis")
 redisClient = redis.Redis(host="10.108.148.45", port=6379)
 
 print("Initiating storage")
+getKey()
 storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
@@ -69,12 +76,6 @@ def predictor_work(uuid, framesCapturedCount):
     for localFrame in localFramePaths:
         os.remove(localFrame)
     os.remove(json_filepath)
-
-
-
-
-    
-
 
 if __name__ == "__main__":
     main()

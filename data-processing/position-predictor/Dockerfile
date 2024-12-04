@@ -24,9 +24,7 @@ RUN pip3 install torch torch-vision ultralytics
 RUN mkdir /data && \
     mkdir /data/input && \
     mkdir /data/output
-
-COPY ./key.json key.json
-
+    
 COPY ./position-predictor.py position-predictor.py
 
 CMD [ "python3", "position-predictor.py"]

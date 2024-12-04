@@ -18,3 +18,11 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 50051
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /etc/secret-volume
+              readOnly: true
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: service-key

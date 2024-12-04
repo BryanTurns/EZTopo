@@ -28,8 +28,6 @@ RUN mkdir /data && \
     mkdir /data/input && \
     mkdir /data/output
 
-COPY ./key.json key.json
-
 COPY ./output-generator.py output-generator.py
 
 

@@ -16,3 +16,11 @@ spec:
         - name: master
           image: bryanturns/eztopo-output:latest
           imagePullPolicy: Always
+          volumeMounts:
+            - name: secret-volume
+              mountPath: /etc/secret-volume
+              readOnly: true
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: service-key

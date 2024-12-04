@@ -16,6 +16,7 @@ lerna-debug.log*
 **/venv
 **/models
 key.json
+secret.yaml
 
 build/
 __pycache__

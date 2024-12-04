@@ -1,6 +1,12 @@
 from flask import Flask, jsonify, request, make_response, send_file
-import redis, hashlib, datetime, os, threading
+import redis, hashlib, datetime, os, threading, base64
 from google.cloud import storage
+
+def getKey():
+    with open("/etc/secret-volume/service-account", "r") as secretFile:
+        secretData = secretFile.read()
+    with open("./key.json", "w+") as keyFile:
+        keyFile.write(secretData)
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
@@ -15,6 +21,7 @@ constants = {"BUCKET_NAME": "eztopo-bucket",
             "REDIS_PORT": 6379}
 
 print("Initiating storage")
+getKey()
 storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 

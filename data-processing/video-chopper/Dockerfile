@@ -24,8 +24,6 @@ RUN mkdir /data && \
     mkdir /data/input && \
     mkdir /data/output
 
-COPY ./key.json key.json
-
 COPY ./video-chopper.py video-chopper.py
 
 CMD [ "python3", "video-chopper.py"]

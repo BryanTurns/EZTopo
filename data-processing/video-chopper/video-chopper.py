@@ -2,6 +2,12 @@ import cv2, os, redis
 from google.cloud import storage
 import threading
 
+def getKey():
+    with open("/etc/secret-volume/service-account", "r") as secretFile:
+        secretData = secretFile.read()
+    with open("./key.json", "w+") as keyFile:
+        keyFile.write(secretData)
+
 print("Loading environment variables")
 constants = {"BUCKET_NAME": "eztopo-bucket",
              "DOWNLOAD_PATH": "./data/input",
@@ -16,6 +22,7 @@ print("Initiating Redis")
 redisClient = redis.Redis(host=constants["REDIS_HOST"], port=constants["REDIS_PORT"])
 
 print("Initiating storage")
+getKey()
 storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
