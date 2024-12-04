@@ -31,7 +31,7 @@ function App() {
     formData.append("file", selectedFile);
     formData.append("username", username);
 
-    fetch("http://localhost:5000/api/uploadVideo", {
+    fetch("http://localhost:80/api/uploadVideo", {
       method: "POST",
       body: formData,
     })
@@ -113,7 +113,7 @@ async function waitForProcessingFinish(uuid, setStatus) {
   var checkStatusBody = JSON.stringify({ uuid: uuid });
   var dataBeingProcessed = true;
   while (dataBeingProcessed) {
-    fetch("http://localhost:5000/api/checkStatus", {
+    fetch("http://localhost:80/api/checkStatus", {
       method: "POST",
       body: checkStatusBody,
       headers: {
@@ -162,7 +162,7 @@ function translateStatus(status) {
 export default App;
 
 function downloadVideo(uuid, setOutputURL) {
-  fetch("http://localhost:5000/api/getOutputVideo", {
+  fetch("http://localhost:80/api/getOutputVideo", {
     method: "POST",
     body: JSON.stringify({ uuid: uuid }),
     headers: {

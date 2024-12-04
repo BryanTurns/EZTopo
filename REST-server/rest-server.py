@@ -100,18 +100,24 @@ def check_status():
         status = -1
 
     return _corsify_actual_response(jsonify({"status": int(status)})), 200
+
+@app.route("/api/test", methods=["GET", "OPTIONS"]) 
+def helloworld():
+    if request.method == "OPTIONS":
+        return _build_cors_preflight_response()
         
+    return _corsify_actual_response(jsonify({"Result": "Hello, World"})), 200
 
 def _build_cors_preflight_response():
     response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+    response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add('Access-Control-Allow-Headers', "*")
     response.headers.add('Access-Control-Allow-Methods', "*")
     return response
 
 
 def _corsify_actual_response(response):
-    response.headers.add("Access-Control-Allow-Origin", "http://localhost:3000")
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
