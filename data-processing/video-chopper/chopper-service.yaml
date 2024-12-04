@@ -5,7 +5,6 @@ metadata:
   labels:
     app: eztopo-predictor
 spec:
-  clusterIP: 10.98.162.175
   ports:
     - protocol: "TCP"
       port: 50051

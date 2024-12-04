@@ -2,7 +2,7 @@ import cv2, os, redis, json
 from google.cloud import storage
 
 print("Loading environment variables")
-constants = {"BUCKET_NAME": "bubbly-axiom-437601-q1",
+constants = {"BUCKET_NAME": "eztopo-bucket",
              "DOWNLOAD_PATH": "./data/input",
              "UPLOAD_PATH": "./data/output",
              "FRAME_TIME_INTERVAL": 2,

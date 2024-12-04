@@ -1,22 +1,22 @@
 import cv2, os, redis
 from google.cloud import storage
-from dotenv import load_dotenv
 import threading
 
 print("Loading environment variables")
-load_dotenv("../../.env")
-constants = {"BUCKET_NAME": os.getenv("BUCKET_NAME"),
+constants = {"BUCKET_NAME": "eztopo-bucket",
              "DOWNLOAD_PATH": "./data/input",
              "UPLOAD_PATH": "./data/output",
              "FRAME_TIME_INTERVAL": 2,
-             "CHOPPING": os.getenv("CHOPPING"),
-             "CHOPPED": os.getenv("CHOPPED")}
+             "CHOPPING": 4,
+             "CHOPPED": 5,
+             "REDIS_HOST": "10.108.148.45",
+             "REDIS_PORT": 6379}
 
 print("Initiating Redis")
-redisClient = redis.Redis(host="localhost", port=6379)
+redisClient = redis.Redis(host=constants["REDIS_HOST"], port=constants["REDIS_PORT"])
 
 print("Initiating storage")
-storage_client = storage.Client()
+storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
 

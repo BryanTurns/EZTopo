@@ -6,8 +6,7 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 print("Loading environment variables")
-constants = {"PROJECT_NAME": "bubbly-axiom-437601-q1", 
-            "BUCKET_NAME": "eztopo-bucket",
+constants = {"BUCKET_NAME": "eztopo-bucket",
             "USER_UPLOAD_INITIATED": 2,
             "USER_UPLOAD_COMPLETE": 3,
             "USER_UPLOAD_PATH": "./data/input",

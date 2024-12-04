@@ -1,13 +1,31 @@
-FROM python:3.8
+FROM python:3.8-slim-buster
 
-RUN mkdir /app && \
-    mkdir /app/data && \
-    cd /app && \
-    pip3 install --upgrade opencv-python-headless grpcio redis minio eztopo-utils protobuf
+ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    libgtk2.0-dev \
+    pkg-config \
+    python3-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libxvidcore-dev \
+    libx264-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    gfortran \
+    libatlas-base-dev 
+RUN pip3 install opencv-python redis google-cloud-storage
+RUN mkdir /data && \
+    mkdir /data/input && \
+    mkdir /data/output
 
-COPY video-chopper.py /app/video-chopper.py
-COPY startup.sh /app/startup.sh
+COPY ./key.json key.json
 
-CMD [ "/bin/bash", "-c", "./startup.sh"]
+COPY ./video-chopper.py video-chopper.py
+
+CMD [ "python3", "video-chopper.py"]
