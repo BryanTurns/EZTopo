@@ -7,6 +7,7 @@ Running the Code:
 3. Create a service account on google cloud platform and download the service key as 'key.json' and put that in the root directory of the project (same directory as deploy-local.sh)
 4. Run deploy-local.sh
 5. Once the containers are spun up (check with `kubectl get pods`) to http://localhost and it should all be there
+6. Upload a video of you climbing (or use ./web-server/publib/example2.mp4) and your traced path will display in the right column
 
 Project Structure:
 
