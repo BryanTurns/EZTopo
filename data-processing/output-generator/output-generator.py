@@ -1,21 +1,21 @@
 import cv2, os, redis, json
 from google.cloud import storage
-from dotenv import load_dotenv
 
 print("Loading environment variables")
-load_dotenv("../../.env")
-constants = {"BUCKET_NAME": os.getenv("BUCKET_NAME"),
+constants = {"BUCKET_NAME": "bubbly-axiom-437601-q1",
              "DOWNLOAD_PATH": "./data/input",
              "UPLOAD_PATH": "./data/output",
              "FRAME_TIME_INTERVAL": 2,
-             "GENERATING_OUTPUT": os.getenv("GENERATING_OUTPUT"),
-             "GENERATED_OUTPUT": os.getenv("GENERATED_OUTPUT")}
+             "GENERATING_OUTPUT": 8,
+             "GENERATED_OUTPUT": 9,
+             "REDIS_HOST": "10.108.148.45",
+             "REDIS_PORT": 6379}
 
 print("Initiating Redis")
-redisClient = redis.Redis(host="localhost", port=6379)
+redisClient = redis.Redis(host=constants["REDIS_HOST"], port=constants["REDIS_PORT"])
 
 print("Initiating storage")
-storage_client = storage.Client()
+storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
 def main():

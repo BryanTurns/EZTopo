@@ -1,0 +1,33 @@
+FROM python:3.8-slim-buster
+
+ENV PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    libgtk2.0-dev \
+    pkg-config \
+    python3-dev \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libv4l-dev \
+    libxvidcore-dev \
+    libx264-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
+    gfortran \
+    libatlas-base-dev 
+RUN pip3 install opencv-python redis google-cloud-storage
+RUN mkdir /data && \
+    mkdir /data/input && \
+    mkdir /data/output
+
+COPY ./key.json key.json
+
+COPY ./output-generator.py output-generator.py
+
+
+
+CMD [ "python3", "output-generator.py"]

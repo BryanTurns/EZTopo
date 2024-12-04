@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eztopo-output
+spec:
+  selector:
+    matchLabels:
+      app: eztopo-output
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: eztopo-output
+    spec:
+      containers:
+        - name: master
+          image: bryanturns/eztopo-output:latest
+          imagePullPolicy: Always
