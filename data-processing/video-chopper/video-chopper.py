@@ -12,7 +12,7 @@ print("Loading environment variables")
 constants = {"BUCKET_NAME": "eztopo-bucket",
              "DOWNLOAD_PATH": "./data/input",
              "UPLOAD_PATH": "./data/output",
-             "FRAME_TIME_INTERVAL": 2,
+             "FRAME_TIME_INTERVAL": 1,
              "CHOPPING": 4,
              "CHOPPED": 5,
              "REDIS_HOST": "10.108.148.45",
