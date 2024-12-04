@@ -1,27 +1,26 @@
 from flask import Flask, jsonify, request, make_response, send_file
 import redis, hashlib, datetime, os, threading
 from google.cloud import storage
-from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024
 
 print("Loading environment variables")
-load_dotenv("../.env")
-constants = {"PROJECT_NAME": os.getenv("PROJECT_NAME"), 
-            "BUCKET_NAME": os.getenv("BUCKET_NAME"),
-            "USER_UPLOAD_INITIATED": os.getenv("USER_UPLOAD_INITIATED"),
-            "USER_UPLOAD_COMPLETE": os.getenv("USER_UPLOAD_COMPLETE"),
+constants = {"PROJECT_NAME": "bubbly-axiom-437601-q1", 
+            "BUCKET_NAME": "eztopo-bucket",
+            "USER_UPLOAD_INITIATED": 2,
+            "USER_UPLOAD_COMPLETE": 3,
             "USER_UPLOAD_PATH": "./data/input",
-            "OUTPUT_PATH": "./data/output"}
+            "OUTPUT_PATH": "./data/output",
+            "REDIS_HOST": "10.108.148.45",
+            "REDIS_PORT": 6379}
 
 print("Initiating storage")
-storage_client = storage.Client()
+storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
 print("Initiating redis")
-redisClient = redis.Redis(host="localhost", port=6379)
+redisClient = redis.Redis(host=constants["REDIS_HOST"], port=constants["REDIS_PORT"])
 
 
 @app.route("/api/uploadVideo", methods=["POST", "OPTIONS"])
@@ -80,7 +79,7 @@ def getOutput():
 
     return _corsify_actual_response(send_file(outputFilepath, as_attachment=True))
 
-    # return _corsify_actual_response(jsonify()), 200
+
 @app.route("/api/checkStatus", methods=["POST", "OPTIONS"])
 def check_status():
     if request.method == "OPTIONS":
@@ -97,13 +96,12 @@ def check_status():
         print("No uuid in request: ", error)
         return _corsify_actual_response(jsonify({"error": "No uuid in request"}))
     
-    status = int(redisClient.get(uuid))
+    status = redisClient.get(uuid)
+    if status == None:
+        status = -1
 
-    return _corsify_actual_response(jsonify({"status": status})), 200
+    return _corsify_actual_response(jsonify({"status": int(status)})), 200
         
-
-    
-
 
 def _build_cors_preflight_response():
     response = make_response()

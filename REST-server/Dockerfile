@@ -1,19 +1,17 @@
 FROM python:3.8
 
-RUN mkdir /app && \
-    cd /app && \
-    mkdir ./data && \
-    mkdir ./data/input && \
-    pip3 install --upgrade flask grpcio redis minio protobuf flask-cors
-
-WORKDIR /app
+RUN mkdir /data && \
+    mkdir /data/input && \
+    mkdir /data/output 
 
 ENV FLASK_PORT=5000
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 5000
 
-COPY rest-server.py /app/app.py
-COPY startup.sh /app/startup.sh
+RUN pip3 install flask google-cloud-storage redis 
 
-CMD [ "/bin/bash", "-c", "./startup.sh"]
+COPY key.json key.json
+COPY rest-server.py app.py
+
+CMD [ "flask", "run", "--host=0.0.0.0"]
