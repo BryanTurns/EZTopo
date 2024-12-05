@@ -18,3 +18,5 @@ kubectl delete deployment/redis
 kubectl delete deployment/ingress-nginx-controller --namespace ingress-nginx
 
 kubectl delete ingress/eztopo-ingress
+
+kubectl delete secret/service-key
