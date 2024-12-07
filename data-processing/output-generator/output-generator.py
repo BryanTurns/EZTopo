@@ -1,4 +1,4 @@
-import cv2, os, redis, json
+import cv2, os, redis, json, concurrent.futures
 from google.cloud import storage
 
 def getKey():
@@ -26,53 +26,60 @@ storage_client = storage.Client.from_service_account_json("./key.json")
 bucket = storage_client.bucket(constants["BUCKET_NAME"])
 
 def main():
-    while True:
-        print("Waiting to generate output...")
-        uuid = redisClient.blpop("outputQueue")[1].decode()
-        redisClient.set(uuid, constants["GENERATING_OUTPUT"])
-        print("Generating output!")
-
-        jsonBlobName = f"{uuid}.json"
-        jsonFilepath = f"{constants['DOWNLOAD_PATH']}/{jsonBlobName}"
-        jsonBlob = bucket.blob(jsonBlobName)
-        jsonBlob.download_to_filename(jsonFilepath)
-
-        videoBlobName = f"Upload-{uuid}"
-        inputVideoFilepath = f"{constants['DOWNLOAD_PATH']}/{videoBlobName}"
-        videoInputBlob = bucket.blob(videoBlobName)
-        videoInputBlob.download_to_filename(inputVideoFilepath)
-
-        with open(jsonFilepath, "r") as json_file:
-            position_data = json.load(json_file)
-
-        inputVideoObject = cv2.VideoCapture(inputVideoFilepath)
-        fps = int(inputVideoObject.get(cv2.CAP_PROP_FPS))
-        dimensions = (int(inputVideoObject.get(cv2.CAP_PROP_FRAME_WIDTH)), int(inputVideoObject.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-        outputVideoFilepath = f"{constants['UPLOAD_PATH']}/Output-{uuid}.mp4"
-        outputVideoObject = cv2.VideoWriter(outputVideoFilepath, cv2.VideoWriter_fourcc(*'avc1'), fps, dimensions)
-
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         while True:
-            success, inputFrame = inputVideoObject.read()
-            if not success:
-                break
+            print("Waiting to generate output...")
+            uuid = redisClient.blpop("outputQueue")[1].decode()
+            redisClient.set(uuid, constants["GENERATING_OUTPUT"])
+            print("Generating output!")
 
-            for i in range(len(position_data) - 1):
-                outputFrame = cv2.line(inputFrame, position_data[i], position_data[i+1], (0, 0, 255), 2)
-            outputVideoObject.write(outputFrame)
-        inputVideoObject.release()
-        outputVideoObject.release()
+            executor.submit(outputWork, uuid)
+            # threading.Thread(target=outputWork, args=(uuid,)).start()
 
-        outputBlobName = f"Output-{uuid}.mp4"
-        blob = bucket.blob(outputBlobName)
-        blob.upload_from_filename(outputVideoFilepath)
+        
 
-        redisClient.set(uuid, constants["GENERATED_OUTPUT"])
+def outputWork(uuid):
+    jsonBlobName = f"{uuid}.json"
+    jsonFilepath = f"{constants['DOWNLOAD_PATH']}/{jsonBlobName}"
+    jsonBlob = bucket.blob(jsonBlobName)
+    jsonBlob.download_to_filename(jsonFilepath)
 
-        os.remove(jsonFilepath)
-        os.remove(inputVideoFilepath)
-        os.remove(outputVideoFilepath)
-        videoInputBlob.delete()
-        jsonBlob.delete()
+    videoBlobName = f"Upload-{uuid}"
+    inputVideoFilepath = f"{constants['DOWNLOAD_PATH']}/{videoBlobName}"
+    videoInputBlob = bucket.blob(videoBlobName)
+    videoInputBlob.download_to_filename(inputVideoFilepath)
+
+    with open(jsonFilepath, "r") as json_file:
+        position_data = json.load(json_file)
+
+    inputVideoObject = cv2.VideoCapture(inputVideoFilepath)
+    fps = int(inputVideoObject.get(cv2.CAP_PROP_FPS))
+    dimensions = (int(inputVideoObject.get(cv2.CAP_PROP_FRAME_WIDTH)), int(inputVideoObject.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+    outputVideoFilepath = f"{constants['UPLOAD_PATH']}/Output-{uuid}.mp4"
+    outputVideoObject = cv2.VideoWriter(outputVideoFilepath, cv2.VideoWriter_fourcc(*'avc1'), fps, dimensions)
+
+    while True:
+        success, inputFrame = inputVideoObject.read()
+        if not success:
+            break
+
+        for i in range(len(position_data) - 1):
+            outputFrame = cv2.line(inputFrame, position_data[i], position_data[i+1], (0, 0, 255), 2)
+        outputVideoObject.write(outputFrame)
+    inputVideoObject.release()
+    outputVideoObject.release()
+
+    outputBlobName = f"Output-{uuid}.mp4"
+    blob = bucket.blob(outputBlobName)
+    blob.upload_from_filename(outputVideoFilepath)
+
+    redisClient.set(uuid, constants["GENERATED_OUTPUT"])
+
+    os.remove(jsonFilepath)
+    os.remove(inputVideoFilepath)
+    os.remove(outputVideoFilepath)
+    videoInputBlob.delete()
+    jsonBlob.delete()
 
 if __name__ == "__main__":
     main()
