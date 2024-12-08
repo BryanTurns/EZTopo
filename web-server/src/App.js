@@ -100,7 +100,7 @@ function App() {
               className=" w-full max-h-[80vh] bottom-0 absolute"
               controls
             >
-              <source src="example.mp4"></source>
+              <source src="outdoors.mp4"></source>
             </video>
           </>
         )}
