@@ -1,6 +1,6 @@
 # EZTopo
 
-## Important Notes:
+### Important Notes:
 
 1. ONLY CONFIRMED TO BE COMPATIBLE WITH .MP4 VIDEOS!
 2. Running this cluster will take significant system resources. I highly encourage you to run ./delete-local.sh whenever you are done using this software.
