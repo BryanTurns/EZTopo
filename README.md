@@ -23,4 +23,4 @@
 3. The conversion of video to topology is under the data-processing directory. Refer to ./data-processing for more information.
 4. The message queue is under message-queue. Refer to ./message-queue/README.md for more information. It is currently implemented with Redis.
 5. Networking (ingress) is done under ./networking. Refer to ./networking/README.md for more information. It is currently implemented with ngix.
-   ![Diagram of the architecture of the project](./other-files/landing.png)
+   ![Diagram of the architecture of the project](./other-files/architecture.png)
