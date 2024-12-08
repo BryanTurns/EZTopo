@@ -73,7 +73,6 @@ function App() {
           </button>
         </form>
         <p className="font-bold">Status: {status}</p>
-        <p onClick={() => setOutputURL("example2.mp4")}>Click Me!</p>
       </div>
       <div className="bg-stone-400 h-full max-w-full relative">
         {outputURL ? (
