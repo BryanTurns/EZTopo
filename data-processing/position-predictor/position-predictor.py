@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 # from dotenv import load_dotenv
 from google.cloud import storage
-import os, redis, threading, json
+import os, redis, threading, json, concurrent.futures
 
 def getKey():
     with open("/etc/secret-volume/service-account", "r") as secretFile:
@@ -27,15 +27,16 @@ print("Loading model")
 model = YOLO(f"./models/yolo11s-pose.pt")
 
 def main():
-    while True:
-        print("Waiting to predict...")
-        data = redisClient.blpop("predictorQueue")[1].decode().split(" ")
-        uuid = data[0]
-        framesCapturedCount = int(data[1])
-        redisClient.set(uuid, constants["PREDICTING"])
-        print(f"Predicting for {uuid}")
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        while True:
+            print("Waiting to predict...")
+            data = redisClient.blpop("predictorQueue")[1].decode().split(" ")
+            uuid = data[0]
+            framesCapturedCount = int(data[1])
+            redisClient.set(uuid, constants["PREDICTING"])
+            print(f"Predicting for {uuid}")
 
-        threading.Thread(target=predictor_work, args=(uuid, framesCapturedCount)).start()
+            executor.submit(predictor_work, uuid, framesCapturedCount)
 
 def predictor_work(uuid, framesCapturedCount):
     localFramePaths = []
