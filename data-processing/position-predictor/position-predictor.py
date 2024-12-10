@@ -1,7 +1,7 @@
 from ultralytics import YOLO
-# from dotenv import load_dotenv
+from functools import cmp_to_key
 from google.cloud import storage
-import os, redis, threading, json, concurrent.futures
+import os, redis, json, concurrent.futures
 
 def getKey():
     with open("/etc/secret-volume/service-account", "r") as secretFile:
@@ -55,8 +55,9 @@ def predictor_work(uuid, framesCapturedCount):
     for result in results:
         if result.keypoints.conf == None:
             continue
-        right_hip = result.keypoints.xy[0][11]
-        left_hip = result.keypoints.xy[0][12]
+        person = sorted(result.keypoints.xy, key=cmp_to_key(sortXY))[0]
+        right_hip = person[11]
+        left_hip = person[12]
         av_x = (right_hip[0] + left_hip[0]) // 2 
         av_y = (right_hip[1] + left_hip[1]) // 2
         hip_position.append((int(av_x), int(av_y)))
@@ -77,6 +78,9 @@ def predictor_work(uuid, framesCapturedCount):
     for localFrame in localFramePaths:
         os.remove(localFrame)
     os.remove(json_filepath)
+
+def sortXY(pos1, pos2):
+    return pos1[11][1] - pos2[11][1]
 
 if __name__ == "__main__":
     main()
