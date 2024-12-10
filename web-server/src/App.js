@@ -53,11 +53,11 @@ function App() {
   };
 
   return (
-    <div className="grid-cols-2 grid h-screen ">
-      <div className="text-center  p-2 bg-stone-300">
-        <h1 className="text-3xl ">
-          Upload your climbing video and get your path drawn!
-        </h1>
+    <div className="grid-cols-2 grid-rows-12 grid h-screen max-h-screen">
+      <h1 className="col-span-1 col-start-1 row-span-1 row-start-1 text-3xl border-b-4 border-r-2 p-2 border-black bg-stone-200">
+        Upload your climbing video and get your path drawn!
+      </h1>
+      <div className="col-span-1 col-start-1 row-start-2 row-span-12 border-r-2 p-2 border-black bg-stone-200">
         <form>
           <input
             type="file"
@@ -66,45 +66,74 @@ function App() {
             onChange={(event) => handleFileChange(event)}
             accept="video/*"
           ></input>
-          <br></br>
-          <br></br>
+
           <button type="button" onClick={() => handleFileUpload()}>
             Submit
           </button>
         </form>
-        <p className="font-bold">Status: {status}</p>
       </div>
-      <div className="bg-stone-400 h-full max-w-full relative">
-        {outputURL ? (
-          <>
-            <h1 className="text-3xl border-b-4 p-2 border-black">
-              Your Topology:
-            </h1>
-            <video
-              className="w-full max-h-[80vh] bottom-0 absolute"
-              key={outputURL}
-              controls
-              autoPlay
-            >
-              <source type="video/mp4" src={outputURL}></source>
-            </video>
-          </>
-        ) : (
-          <>
-            <h1 className="text-3xl border-b-4 p-2 border-black">
-              Example Video:
-            </h1>
-            <video
-              id="videoPlayer"
-              className=" w-full max-h-[80vh] bottom-0 absolute"
-              controls
-            >
-              <source src="outdoors.mp4"></source>
-            </video>
-          </>
-        )}
+      <h1 className="col-span-1 col-start-2 row-start-1 row-span-1 text-3xl border-b-4 p-2 border-black bg-stone-400">
+        Example Video:
+      </h1>
+      <div className="col-span-1 col-start-2 row-start-2 row-span-12 max-h-full justify-items-center  bg-stone-400 ">
+        <video id="videoPlayer" className="max-h-full" controls>
+          <source src="outdoors.mp4"></source>
+        </video>
       </div>
+
+      {/* <div className="col-span-1 col-start-2 row-start-2 bg-stone-400 "></div> */}
     </div>
+    // <div className="grid-cols-2 grid h-screen ">
+    //   <div className="text-center  p-2 bg-stone-300">
+    //     <h1 className="text-3xl ">
+    //     </h1>
+    //     <form>
+    //       <input
+    //         type="file"
+    //         id="videoUploadID"
+    //         name="videoUpload"
+    //         onChange={(event) => handleFileChange(event)}
+    //         accept="video/*"
+    //       ></input>
+    //       <br></br>
+    //       <br></br>
+    //       <button type="button" onClick={() => handleFileUpload()}>
+    //         Submit
+    //       </button>
+    //     </form>
+    //     <p className="font-bold">Status: {status}</p>
+    //   </div>
+    //   <div className="bg-stone-400 h-full max-w-full relative">
+    //     {outputURL ? (
+    //       <>
+    //         <h1 className="text-3xl border-b-4 p-2 border-black">
+    //           Your Topology:
+    //         </h1>
+    //         <video
+    //           className="w-full max-h-[80vh] bottom-0 absolute"
+    //           key={outputURL}
+    //           controls
+    //           autoPlay
+    //         >
+    //           <source type="video/mp4" src={outputURL}></source>
+    //         </video>
+    //       </>
+    //     ) : (
+    //       <>
+    //         <h1 className="text-3xl border-b-4 p-2 border-black">
+    //           Example Video:
+    //         </h1>
+    //         <video
+    //           id="videoPlayer"
+    //           className=" w-full max-h-[80vh] bottom-0 absolute"
+    //           controls
+    //         >
+    //           <source src="outdoors.mp4"></source>
+    //         </video>
+    //       </>
+    //     )}
+    //   </div>
+    // </div>
   );
 }
 

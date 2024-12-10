@@ -14,8 +14,9 @@
 5. Once the containers are spun up (check with `kubectl get pods`) to http://localhost and you should be presented with the React frontend
 6. Upload a video of you climbing (or use ./example-videos/example1.mp4) and your traced path will display in the right column
 7. When you're done run `delete-local.sh` to remove all deployments and services being ran by kubernetes. NOTE: You will not be able to immediately re-spin up the deployments as the nginx namespace is being deleted.
-   What you should see once you go to http://localhost:
-   ![Picture of the landing page](./other-files/landing.png)
+
+What you should see once you go to http://localhost:
+![Picture of the landing page](./other-files/landing.png)
 
 ### Project Structure:
 
@@ -24,5 +25,6 @@
 3. The conversion of video to topology is under the data-processing directory. Refer to ./data-processing for more information.
 4. The message queue is under message-queue. Refer to ./message-queue/README.md for more information. It is currently implemented with Redis.
 5. Networking (ingress) is done under ./networking. Refer to ./networking/README.md for more information. It is currently implemented with ngix.
-   Diagram of the architecture:
-   ![Diagram of the architecture of the project](./other-files/architecture.png)
+
+Diagram of the architecture:
+![Diagram of the architecture of the project](./other-files/architecture.png)
