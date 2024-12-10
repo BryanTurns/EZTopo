@@ -59,7 +59,9 @@ function App() {
       </h1>
       <div className="p-4 col-span-1 col-start-1 sm:row-start-3 xl:row-start-2 row-span-12 border-r-2 border-black bg-stone-200 ">
         <form className="">
-          <h2 className="text-lg">Upload your video for processing:</h2>
+          <h2 className="text-lg font-medium">
+            Upload your video for processing:
+          </h2>
           <input
             type="file"
             id="videoUploadID"
@@ -77,7 +79,11 @@ function App() {
             Upload
           </button>
         </form>
-        <p className="my-8 font-bold">Status: {status}</p>
+        <p className="mt-8 font-bold">Status: {status}</p>
+        <p>
+          Note: Currently the AI only tracks the person with the highest hip
+          position in the frame
+        </p>
       </div>
       <h1 className="col-span-1 col-start-2 row-start-1 sm:row-span-2 xl:row-span-1 font-semibold text-3xl border-b-4 p-2 border-black bg-stone-400">
         {outputURL == null ? "Example Video:" : "Your Video:"}
