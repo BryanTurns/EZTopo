@@ -54,10 +54,10 @@ function App() {
 
   return (
     <div className="grid-cols-2 grid-rows-12 grid h-screen max-h-screen">
-      <h1 className="col-span-1 col-start-1 row-span-1 row-start-1 text-3xl border-b-4 border-r-2 p-2 border-black bg-stone-200">
+      <h1 className="col-span-1 col-start-1 sm:row-span-2 xl:row-span-1 row-start-1 text-3xl border-b-4 border-r-2 p-2 border-black bg-stone-200">
         Upload your climbing video and get your path drawn!
       </h1>
-      <div className="col-span-1 col-start-1 row-start-2 row-span-12 border-r-2 p-2 border-black bg-stone-200">
+      <div className="col-span-1 col-start-1 sm:row-start-3 xl:row-start-2 row-span-12 border-r-2 p-2 border-black bg-stone-200">
         <form>
           <input
             type="file"
@@ -72,10 +72,10 @@ function App() {
           </button>
         </form>
       </div>
-      <h1 className="col-span-1 col-start-2 row-start-1 row-span-1 text-3xl border-b-4 p-2 border-black bg-stone-400">
+      <h1 className="col-span-1 col-start-2 row-start-1 sm:row-span-2 xl:row-span-1  text-3xl border-b-4 p-2 border-black bg-stone-400">
         Example Video:
       </h1>
-      <div className="col-span-1 col-start-2 row-start-2 row-span-12 max-h-full justify-items-center  bg-stone-400 ">
+      <div className="col-span-1 col-start-2 sm:row-start-3 xl:row-start-2 row-span-12 max-h-full justify-items-center  bg-stone-400 ">
         <video id="videoPlayer" className="max-h-full" controls>
           <source src="outdoors.mp4"></source>
         </video>
