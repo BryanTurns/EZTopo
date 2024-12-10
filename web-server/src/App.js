@@ -6,7 +6,7 @@ function App() {
   const [status, setStatus] = useState("No Upload");
   const [progress, setProgress] = useState(0);
   const [username, setUsername] = useState("Guest");
-  const [outputURL, setOutputURL] = useState();
+  const [outputURL, setOutputURL] = useState(null);
 
   // const videoPlayer = document.getElementById("videoPlayer");
   // useEffect(() => {
@@ -53,35 +53,46 @@ function App() {
   };
 
   return (
-    <div className="grid-cols-2 grid-rows-12 grid h-screen max-h-screen">
-      <h1 className="col-span-1 col-start-1 sm:row-span-2 xl:row-span-1 row-start-1 text-3xl border-b-4 border-r-2 p-2 border-black bg-stone-200">
-        Upload your climbing video and get your path drawn!
+    <div className="grid grid-cols-2 grid-rows-12 h-screen max-h-screen">
+      <h1 className="col-span-1 col-start-1 sm:row-span-2 xl:row-span-1 row-start-1 text-3xl font-semibold border-b-4 border-r-2 p-2 border-black bg-stone-200">
+        Auto-draw your climbing path!
       </h1>
-      <div className="col-span-1 col-start-1 sm:row-start-3 xl:row-start-2 row-span-12 border-r-2 p-2 border-black bg-stone-200">
-        <form>
+      <div className="p-4 col-span-1 col-start-1 sm:row-start-3 xl:row-start-2 row-span-12 border-r-2 border-black bg-stone-200 ">
+        <form className="">
+          <h2 className="text-lg">Upload your video for processing:</h2>
           <input
             type="file"
             id="videoUploadID"
             name="videoUpload"
             onChange={(event) => handleFileChange(event)}
             accept="video/*"
+            className="mx-4 my-4 block"
           ></input>
 
-          <button type="button" onClick={() => handleFileUpload()}>
-            Submit
+          <button
+            className="py-1 px-3 mx-4 my-4 border-4 hover:bg-zinc-100 border-stone-700  rounded-lg font-semibold bg-zinc-300 block "
+            type="button"
+            onClick={() => handleFileUpload()}
+          >
+            Upload
           </button>
         </form>
+        <p className="my-8 font-bold">Status: {status}</p>
       </div>
-      <h1 className="col-span-1 col-start-2 row-start-1 sm:row-span-2 xl:row-span-1  text-3xl border-b-4 p-2 border-black bg-stone-400">
-        Example Video:
+      <h1 className="col-span-1 col-start-2 row-start-1 sm:row-span-2 xl:row-span-1 font-semibold text-3xl border-b-4 p-2 border-black bg-stone-400">
+        {outputURL == null ? "Example Video:" : "Your Video:"}
       </h1>
       <div className="col-span-1 col-start-2 sm:row-start-3 xl:row-start-2 row-span-12 max-h-full justify-items-center  bg-stone-400 ">
-        <video id="videoPlayer" className="max-h-full" controls>
-          <source src="outdoors.mp4"></source>
-        </video>
+        {outputURL == null ? (
+          <video id="videoPlayer" className="max-h-full" controls>
+            <source src="outdoors.mp4"></source>
+          </video>
+        ) : (
+          <video className="max-h-full" key={outputURL} controls autoPlay>
+            <source type="video/mp4" src={outputURL} />
+          </video>
+        )}
       </div>
-
-      {/* <div className="col-span-1 col-start-2 row-start-2 bg-stone-400 "></div> */}
     </div>
     // <div className="grid-cols-2 grid h-screen ">
     //   <div className="text-center  p-2 bg-stone-300">
