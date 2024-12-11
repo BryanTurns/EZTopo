@@ -1,5 +1,7 @@
 # EZTopo
 
+Final Project Team 122: Bryan Turns and Ian Barnaby
+
 ### Important Notes:
 
 1. ONLY CONFIRMED TO BE COMPATIBLE WITH .MP4 VIDEOS!
