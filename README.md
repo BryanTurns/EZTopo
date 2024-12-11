@@ -12,7 +12,7 @@ Final Project Team 122: Bryan Turns and Ian Barnaby
 1. Install docker and enable kubernetes
 2. Create a google cloud platform account and create a cloud storage bucket named `eztopo-bucket`
 3. Create a service account on google cloud platform with storage bucket administrartion privledges and download the service key as 'key.json' and put that in the root directory of the project (same directory as deploy-local.sh)
-4. Run `deploy-local.sh` to create all the necessary deployments and services. NOTE: If you previously ran delete-local.sh note the final line of output and check if it is an error. If so, wait a minute or two and try again.
+4. Run `deploy-local.sh` to create all the necessary deployments and services. It may take a minute or two for everything to be fully running as most services have to create connections to Google Cloud Platform. NOTE: If you previously ran delete-local.sh note the final line of output and check if it is an error. If so, wait a minute or two and try again.
 5. Once the containers are spun up (check with `kubectl get pods`) to http://localhost and you should be presented with the React frontend
 6. Upload a video of you climbing (or use ./example-videos/example1.mp4) and your traced path will display in the right column
 7. When you're done run `delete-local.sh` to remove all deployments and services being ran by kubernetes. NOTE: You will not be able to immediately re-spin up the deployments as the nginx namespace is being deleted.
