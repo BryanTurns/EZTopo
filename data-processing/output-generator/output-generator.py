@@ -79,7 +79,7 @@ def outputWork(uuid):
     os.remove(inputVideoFilepath)
     os.remove(outputVideoFilepath)
     videoInputBlob.delete()
-    jsonBlob.delete()
+    # jsonBlob.delete()
 
 if __name__ == "__main__":
     main()
