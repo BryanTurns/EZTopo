@@ -1,1 +1,0 @@
-The position-predictor is responsible for using the YOLO-pose model to find the body position. The current impliminatation will be called with a given video-id and process all the frames for that upload.
