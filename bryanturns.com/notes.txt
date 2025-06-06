@@ -1,0 +1,3 @@
+Switch dependencies around. Have each web stack import the dns and then use that to add A name records. 
+
+outdoors.mp4 is too large. Use a lambda to upload or CI/CD pipeline with aws s3 sync
