@@ -30,7 +30,7 @@ VOLUME ["/data"]
 EXPOSE 5000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s \
-    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/test').read()"
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/api/health').read()"
 
 # One worker so the pipeline threads and their in-memory job state are shared by
 # every request; threads keep uploads and polling responsive while it works.

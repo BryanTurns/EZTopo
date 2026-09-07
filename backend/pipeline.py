@@ -30,6 +30,8 @@ _status_lock = threading.Lock()
 
 _model = None
 
+_workers = {}
+
 
 def set_status(uuid, status):
     with _status_lock:
@@ -62,7 +64,36 @@ def start_workers():
     for name, worker in (("chopper", _chop_worker),
                          ("predictor", _predict_worker),
                          ("output-generator", _output_worker)):
-        threading.Thread(target=worker, name=name, daemon=True).start()
+        thread = threading.Thread(target=worker, name=name, daemon=True)
+        thread.start()
+        _workers[name] = thread
+
+
+def worker_status():
+    """Liveness and backlog of each stage, for /api/health.
+
+    A dead thread is the failure worth catching here: the stages are daemon
+    threads, so if one stops the process keeps serving uploads and every video
+    handed to that stage silently stops advancing.
+    """
+    return {
+        "chopper": _stage_status("chopper", _chop_queue),
+        "predictor": _stage_status("predictor", _predict_queue),
+        "output-generator": _stage_status("output-generator", _output_queue),
+    }
+
+
+def _stage_status(name, work_queue):
+    thread = _workers.get(name)
+    return {
+        "alive": thread is not None and thread.is_alive(),
+        "queued": work_queue.qsize(),
+    }
+
+
+def model_loaded():
+    """False until the first video reaches the predict stage, which is normal."""
+    return _model is not None
 
 
 def _run_stage(name, work_queue, handler):

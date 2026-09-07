@@ -99,9 +99,16 @@ export default function App() {
       <section className="flex flex-col border-b border-zinc-200 lg:w-1/2 lg:min-w-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
         <div className="mx-auto w-full max-w-md px-6 py-8 sm:px-8">
           <header className="mb-6">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              EZTopo
-            </h1>
+            <div className="flex items-center gap-3">
+              <img
+                src={`${process.env.PUBLIC_URL}/logo192.png`}
+                alt=""
+                className="h-9 w-9 sm:h-10 sm:w-10"
+              />
+              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+                EZTopo
+              </h1>
+            </div>
             <p className="mt-1 text-sm text-zinc-500">
               Upload a climbing video and get your path traced onto it.
             </p>

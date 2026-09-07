@@ -1,6 +1,7 @@
 import datetime
 import hashlib
 import os
+import shutil
 
 import config
 import pipeline
@@ -63,6 +64,37 @@ def get_output_video():
         return jsonify({"error": "No output video for that uuid"}), 404
 
     return send_file(output, as_attachment=True)
+
+
+@app.route("/api/health", methods=["GET"])
+def health():
+    """Report whether this instance can actually process a video.
+
+    200 when every dependency the pipeline needs is present and all three
+    stages are running, 503 otherwise, so a container orchestrator or load
+    balancer can pull a broken instance out of rotation.
+    """
+    workers = pipeline.worker_status()
+    checks = {
+        "workers": workers,
+        "ffmpeg": shutil.which("ffmpeg") is not None,
+        "model_file": os.path.exists(config.MODEL_PATH),
+        "data_dirs": all(os.path.isdir(path) and os.access(path, os.W_OK)
+                         for path in config.WORKING_PATHS),
+        # Informational: the model is loaded lazily by the first prediction, so
+        # False here is normal on a freshly started instance and not a failure.
+        "model_loaded": pipeline.model_loaded(),
+    }
+
+    healthy = (
+        all(stage["alive"] for stage in workers.values())
+        and checks["ffmpeg"]
+        and checks["model_file"]
+        and checks["data_dirs"]
+    )
+
+    body = {"status": "ok" if healthy else "degraded", "checks": checks}
+    return jsonify(body), 200 if healthy else 503
 
 
 @app.route("/api/test", methods=["GET"])
