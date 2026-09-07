@@ -7,16 +7,14 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
-**/data/input/*
-**/data/output/*
 **/lib
 **/web_modules
 **/Include
 **/Scripts
 **/venv
 **/models
-key.json
-secret.yaml
+!backend/models/yolo11s-pose.pt
+backend/data/
 
 build/
 __pycache__
